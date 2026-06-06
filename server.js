@@ -58,7 +58,9 @@ Responda APENAS em JSON puro, sem markdown, sem texto fora do JSON:
   "tipo_gancho": "Nome do tipo de gancho escolhido + explicação em 2-3 frases de POR QUE esse gancho foi escolhido e como retém atenção nos primeiros 3 segundos.",
   "desenvolvimento": "Corpo do vídeo (4-30s): entrega o presságio rapidamente, sem enrolação.",
   "climax": "O ponto alto (30s-1min): o insight, a virada, a lição mais importante.",
-  "fechamento": "Conclusão + CTA (1min-1:30min): entrega a promessa e termina com chamada clara."
+  "fechamento": "Conclusão + CTA (1min-1:30min): entrega a promessa e termina com chamada clara.",
+  "legenda": "Legenda completa para o post no Instagram. Tom humano, envolvente, que complementa o vídeo sem repetir tudo. Máximo 150 palavras. OBRIGATÓRIO terminar com uma pergunta instigante para gerar comentários.",
+  "hashtags": "#hashtag1 #hashtag2 #hashtag3 #hashtag4 #hashtag5 #hashtag6 #hashtag7 #hashtag8 #hashtag9 #hashtag10 (10 hashtags relevantes misturando grandes, médias e de nicho)"
 }`;
 
   try {
