@@ -150,9 +150,13 @@ Retorne APENAS JSON puro, sem markdown, sem texto fora do JSON:
 
     const content = data.content || [];
     const text = content.filter(i => i.type === "text").map(i => i.text).join("");
-    const jsonMatch = text.match(/\{[\s\S]*\}/);
-    if (!jsonMatch) return res.status(500).json({ error: "Formato inválido" });
-    res.json(JSON.parse(jsonMatch[0]));
+
+    // Extrai o JSON mais externo (do primeiro { ao último })
+    const start = text.indexOf("{");
+    const end = text.lastIndexOf("}");
+    if (start === -1 || end === -1) return res.status(500).json({ error: "Formato inválido" });
+    const jsonStr = text.slice(start, end + 1);
+    res.json(JSON.parse(jsonStr));
   } catch (e) {
     console.error("Erro trends:", e);
     res.status(500).json({ error: "Erro ao buscar trends" });
