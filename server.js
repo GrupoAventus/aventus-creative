@@ -5,27 +5,28 @@ const fetch = require("node-fetch");
 const app = express();
 app.use(cors());
 app.use(express.json());
-app.use(express.static("public")); // serve o frontend
+app.use(express.static("public"));
 
 app.post("/gerar-roteiro", async (req, res) => {
   const { ideia, tom, duracao, nicho } = req.body;
-
   if (!ideia) return res.status(400).json({ error: "Ideia obrigatória" });
+
   const nichoSelecionado = nicho || "Negócios & Empreendedorismo";
 
   const GANCHO_TIPOS = [
-    "Negativo", "Contraintuitivo", "Curiosidade", "Polêmica",
-    "Pergunta: Você sabia que...", "Autoridade", "Storytelling",
-    "Identificação", "Frases de Impacto", "Urgência", "Visual"
+    "Negativo","Contraintuitivo","Curiosidade","Polêmica",
+    "Pergunta: Você sabia que...","Autoridade","Storytelling",
+    "Identificação","Frases de Impacto","Urgência","Visual"
   ];
 
-  const prompt = `Você é um especialista em roteiros virais para Instagram Reels no nicho de Negócios e Empreendedorismo.
+  const prompt = `Você é um especialista em roteiros virais para Instagram Reels no nicho de ${nichoSelecionado}.
 
-Ideia/tema: "${ideia}"
-Tom: ${tom}
-Duração: ${duracao}
+O usuário quer criar um Reel com a seguinte ideia/tema: "${ideia}"
+Tom desejado: ${tom}
+Duração alvo: ${duracao}
+Nicho: ${nichoSelecionado}
 
-Use web search para pesquisar dados reais e atuais sobre esse tema.
+Use web search para pesquisar dados reais e atuais sobre esse tema antes de criar o roteiro.
 
 Os 11 tipos de gancho disponíveis: ${GANCHO_TIPOS.map((g,i) => `${i+1}. ${g}`).join(", ")}
 
@@ -58,8 +59,6 @@ Responda APENAS em JSON puro, sem markdown, sem texto fora do JSON:
     });
 
     const data = await response.json();
-
-    // Log para debug
     console.log("Resposta API:", JSON.stringify(data).slice(0, 500));
 
     if (data.error) {
@@ -79,7 +78,7 @@ Responda APENAS em JSON puro, sem markdown, sem texto fora do JSON:
     const parsed = JSON.parse(clean);
     res.json(parsed);
   } catch (e) {
-    console.error(e);
+    console.error("Erro:", e);
     res.status(500).json({ error: "Erro ao gerar roteiro" });
   }
 });
