@@ -61,7 +61,7 @@
   <div class="lock-screen" id="lockScreen">
     <div class="lock-box">
       <div class="lock-icon">🔐</div>
-      <div class="lock-title">Roteiro <span class="accent">Viral</span></div>
+      <div class="lock-title">Aventus Creative_</div>
       <div class="lock-sub">Digite a senha para acessar</div>
       <input class="lock-input" type="password" id="senhaInput" placeholder="••••••••" onkeydown="if(event.key==='Enter')verificarSenha()" />
       <button class="lock-btn" onclick="verificarSenha()">Entrar</button>
@@ -70,14 +70,23 @@
   </div>
 
   <div class="badge"><div class="dot"></div> Instagram Reels · Negócios & Empreendedorismo</div>
-  <h1>Roteiro <span class="accent">Viral</span></h1>
+  <h1>Aventus <span class="accent">Creative_</span></h1>
   <p class="sub">Jogue uma ideia, a IA pesquisa e monta seu roteiro com estrutura de tempo + gancho estratégico.</p>
 
   <div class="card">
     <label>Sua ideia ou tema</label>
     <textarea id="ideia" placeholder="Ex: Por que a maioria dos empreendedores quebra nos primeiros 2 anos..."></textarea>
     <div class="row">
-      <select id="tom">
+      <select id="nicho">
+        <option value="Negócios & Empreendedorismo">Negócios & Empreendedorismo</option>
+        <option value="Marketing Digital">Marketing Digital</option>
+        <option value="Finanças Pessoais">Finanças Pessoais</option>
+        <option value="Saúde & Bem-estar">Saúde & Bem-estar</option>
+        <option value="Fitness & Emagrecimento">Fitness & Emagrecimento</option>
+        <option value="Beleza & Skincare">Beleza & Skincare</option>
+        <option value="Moda & Estilo">Moda & Estilo</option>
+        <option value="Relacionamentos">Relacionamentos</option>
+      </select>
         <option value="direto e provocador">Direto e provocador</option>
         <option value="educativo e inspirador">Educativo e inspirador</option>
         <option value="storytelling pessoal">Storytelling pessoal</option>
