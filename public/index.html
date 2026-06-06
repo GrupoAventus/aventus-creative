@@ -313,7 +313,21 @@
         }
         html += `</div>`;
       });
-      html += `<button class="copy-btn" onclick="copiarRoteiro()">Copiar roteiro completo</button>`;
+      // Legenda
+      if (data.legenda) {
+        html += `<div class="step-card" style="border-left:3px solid #9b59b6; margin-top:6px;">
+          <div class="step-head">
+            <div class="step-num" style="background:#9b59b622;color:#9b59b6">✍</div>
+            <span class="step-label">Legenda do Post</span>
+            <span class="step-desc">Pronta para copiar</span>
+          </div>
+          <p class="step-text" style="white-space:pre-line">${data.legenda}</p>
+          ${data.hashtags ? `<div style="margin-top:12px;padding-top:10px;border-top:1px solid #1a1a1a;font-size:13px;color:#666;line-height:1.8;">${data.hashtags}</div>` : ""}
+        </div>`;
+      }
+
+      html += `<button class="copy-btn" onclick="copiarRoteiro()">Copiar roteiro completo</button>
+      <button class="copy-btn" style="margin-top:8px" onclick="copiarLegenda()">Copiar legenda + hashtags</button>`;
       result.innerHTML = html; result.style.display = "block";
       window._roteiro = data;
     }
@@ -347,7 +361,15 @@
       result.innerHTML = html; result.style.display = "block";
     }
 
-    function copiarRoteiro() {
+    function copiarLegenda() {
+      if (!window._roteiro) return;
+      const txt = (window._roteiro.legenda || "") + "\n\n" + (window._roteiro.hashtags || "");
+      navigator.clipboard.writeText(txt).then(() => {
+        const btns = document.querySelectorAll(".copy-btn");
+        btns[1].textContent = "✓ Copiado!"; btns[1].style.color="#ff6b00"; btns[1].style.borderColor="#ff6b00";
+        setTimeout(() => { btns[1].textContent="Copiar legenda + hashtags"; btns[1].style.color=""; btns[1].style.borderColor=""; }, 2500);
+      });
+    }
       if (!window._roteiro) return;
       const labels = { ideia:"IDEIA", gancho:"GANCHO", tipo_gancho:"TIPO DE GANCHO", desenvolvimento:"DESENVOLVIMENTO", climax:"CLÍMAX", fechamento:"FECHAMENTO + CTA" };
       const txt = STEPS.map(s => `${labels[s.key]}\n${window._roteiro[s.key]}`).join("\n\n");
