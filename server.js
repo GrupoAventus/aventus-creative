@@ -100,29 +100,36 @@ app.post("/buscar-trends", async (req, res) => {
 
   const prompt = `Você é um especialista em tendências de conteúdo viral para redes sociais.
 
-Use a busca na web para pesquisar AGORA as trends mais quentes para o nicho: "${nicho}"
+Use a busca na web para pesquisar as trends mais quentes para o nicho: "${nicho}"
 
-Pesquise: vídeos viralizando, temas em alta, hashtags trending, formatos de conteúdo que estão bombando no Instagram Reels e TikTok para esse nicho nos últimos dias.
-
-Para cada trend, calcule um score de 0 a 100 baseado em:
-- Volume de engajamento de vídeos similares
-- Velocidade de crescimento
-- Potencial de replicação
-
-Retorne APENAS JSON puro, sem markdown, sem texto fora do JSON:
+Retorne APENAS JSON puro, sem markdown. Seja CONCISO, máximo 80 palavras por campo de texto:
 
 {
   "trends": [
     {
-      "titulo": "Título chamativo da trend",
+      "titulo": "Título curto da trend (max 10 palavras)",
       "score": 85,
       "plataformas": ["Reels", "TikTok"],
       "tags": ["tag1", "tag2", "tag3"],
-      "descricao": "Por que essa trend está viralizando agora, com dados concretos de engajamento e alcance de vídeos similares.",
-      "como_usar": "Sugestão prática e específica de como criar um conteúdo usando essa trend no nicho informado."
+      "descricao": "Por que está viralizando agora. Máximo 60 palavras.",
+      "como_usar": "Como aplicar no nicho. Máximo 60 palavras."
     },
-    {...},
-    {...}
+    {
+      "titulo": "...",
+      "score": 0,
+      "plataformas": [],
+      "tags": [],
+      "descricao": "...",
+      "como_usar": "..."
+    },
+    {
+      "titulo": "...",
+      "score": 0,
+      "plataformas": [],
+      "tags": [],
+      "descricao": "...",
+      "como_usar": "..."
+    }
   ]
 }`;
 
