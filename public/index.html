@@ -10,13 +10,15 @@
 
     /* LOCK */
     .lock-screen { position:fixed; inset:0; background:#0a0a0a; display:flex; flex-direction:column; align-items:center; justify-content:center; z-index:9999; }
-    .lock-box { background:#111; border:1px solid #1f1f1f; border-radius:20px; padding:2.5rem 2rem; width:100%; max-width:360px; text-align:center; }
-    .lock-icon { font-size:36px; margin-bottom:16px; }
-    .lock-title { font-size:22px; font-weight:700; margin-bottom:6px; }
-    .lock-sub { font-size:14px; color:#555; margin-bottom:24px; }
-    .lock-input { width:100%; padding:12px 14px; font-size:16px; border:1px solid #222; border-radius:10px; background:#0d0d0d; color:#fff; font-family:inherit; outline:none; text-align:center; letter-spacing:3px; transition:border-color 0.2s; }
+    .lock-box { background:#111; border:1px solid #1f1f1f; border-radius:20px; padding:2.5rem 2rem; width:100%; max-width:380px; text-align:center; }
+    .lock-logo { font-size:22px; font-weight:700; margin-bottom:4px; }
+    .lock-sub { font-size:13px; color:#555; margin-bottom:28px; }
+    .lock-field { text-align:left; margin-bottom:14px; }
+    .lock-label { font-size:11px; color:#555; font-weight:500; text-transform:uppercase; letter-spacing:1px; margin-bottom:6px; display:block; }
+    .lock-input { width:100%; padding:11px 14px; font-size:15px; border:1px solid #222; border-radius:10px; background:#0d0d0d; color:#fff; font-family:inherit; outline:none; transition:border-color 0.2s; }
     .lock-input:focus { border-color:#ff6b00; }
-    .lock-btn { width:100%; margin-top:12px; padding:12px; font-size:15px; font-weight:600; cursor:pointer; border:none; border-radius:10px; background:linear-gradient(135deg,#ff6b00,#ff8c00); color:#fff; }
+    .lock-btn { width:100%; margin-top:6px; padding:12px; font-size:15px; font-weight:600; cursor:pointer; border:none; border-radius:10px; background:linear-gradient(135deg,#ff6b00,#ff8c00); color:#fff; }
+    .lock-btn:disabled { background:#2a2a2a; color:#555; cursor:not-allowed; }
     .lock-error { color:#ff4444; font-size:13px; margin-top:10px; display:none; }
 
     /* APP */
@@ -57,19 +59,26 @@
     .copy-btn { width:100%; margin-top:14px; padding:11px; font-size:14px; font-weight:500; cursor:pointer; border:1px solid #2a2a2a; border-radius:10px; background:transparent; color:#555; transition:all 0.2s; }
     .copy-btn:hover { border-color:#ff6b00; color:#ff6b00; background:#ff6b0015; }
     .error { color:#ff4444; font-size:13px; margin-top:10px; }
+    .user-tag { font-size:12px; color:#444; margin-left:auto; }
   </style>
 </head>
 <body>
 
-  <!-- TELA DE SENHA -->
+  <!-- TELA DE LOGIN -->
   <div class="lock-screen" id="lockScreen">
     <div class="lock-box">
-      <div class="lock-icon">🔐</div>
-      <div class="lock-title">Aventus <span class="accent">Creative_</span></div>
-      <div class="lock-sub">Digite a senha para acessar</div>
-      <input class="lock-input" type="password" id="senhaInput" placeholder="••••••••" onkeydown="if(event.key==='Enter')verificarSenha()" />
-      <button class="lock-btn" onclick="verificarSenha()">Entrar</button>
-      <div class="lock-error" id="lockError">Senha incorreta. Tente novamente.</div>
+      <div class="lock-logo">Aventus <span class="accent">Creative_</span></div>
+      <div class="lock-sub">Faça login para acessar</div>
+      <div class="lock-field">
+        <label class="lock-label">Usuário</label>
+        <input class="lock-input" type="text" id="usuarioInput" placeholder="Seu usuário" onkeydown="if(event.key==='Enter')document.getElementById('senhaInput').focus()" />
+      </div>
+      <div class="lock-field">
+        <label class="lock-label">Senha</label>
+        <input class="lock-input" type="password" id="senhaInput" placeholder="••••••••" onkeydown="if(event.key==='Enter')fazerLogin()" />
+      </div>
+      <button class="lock-btn" id="loginBtn" onclick="fazerLogin()">Entrar</button>
+      <div class="lock-error" id="lockError">Usuário ou senha incorretos.</div>
     </div>
   </div>
 
@@ -114,25 +123,6 @@
   <div class="result" id="result"></div>
 
   <script>
-    const SENHA_CORRETA = "aventus2025";
-
-    function verificarSenha() {
-      const input = document.getElementById("senhaInput").value;
-      const erro = document.getElementById("lockError");
-      if (input === SENHA_CORRETA) {
-        document.getElementById("lockScreen").style.display = "none";
-      } else {
-        erro.style.display = "block";
-        document.getElementById("senhaInput").value = "";
-        document.getElementById("senhaInput").focus();
-      }
-    }
-
-    function atualizarBadge() {
-      const nicho = document.getElementById("nicho").value;
-      document.getElementById("badgeText").textContent = "Instagram Reels · " + nicho;
-    }
-
     const CORES = ["#ff6b00","#ff7a00","#ff8c00","#e65c00","#cc5200"];
     const TIPOS = ["Negativo","Contraintuitivo","Curiosidade","Polêmica","Pergunta: Você sabia que...","Autoridade","Storytelling","Identificação","Frases de Impacto","Urgência","Visual"];
     const STEPS = [
@@ -145,7 +135,42 @@
     ];
 
     const msgs = ["Pesquisando sobre o tema...","Analisando tendências...","Estruturando o roteiro...","Escolhendo o melhor gancho..."];
-    let ticker;
+
+    async function fazerLogin() {
+      const usuario = document.getElementById("usuarioInput").value.trim();
+      const senha = document.getElementById("senhaInput").value;
+      const btn = document.getElementById("loginBtn");
+      const erro = document.getElementById("lockError");
+      if (!usuario || !senha) return;
+
+      btn.disabled = true; btn.textContent = "Entrando...";
+      erro.style.display = "none";
+
+      try {
+        const res = await fetch("/login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ usuario, senha })
+        });
+        const data = await res.json();
+        if (data.ok) {
+          document.getElementById("lockScreen").style.display = "none";
+        } else {
+          erro.style.display = "block";
+          document.getElementById("senhaInput").value = "";
+        }
+      } catch(e) {
+        erro.textContent = "Erro de conexão. Tente novamente.";
+        erro.style.display = "block";
+      } finally {
+        btn.disabled = false; btn.textContent = "Entrar";
+      }
+    }
+
+    function atualizarBadge() {
+      const nicho = document.getElementById("nicho").value;
+      document.getElementById("badgeText").textContent = "Instagram Reels · " + nicho;
+    }
 
     async function gerar() {
       const ideia = document.getElementById("ideia").value.trim();
@@ -161,7 +186,7 @@
       btn.disabled = true; btn.textContent = "Gerando...";
       err.style.display = "none"; loading.style.display = "block"; result.style.display = "none";
       let mi = 0;
-      ticker = setInterval(() => { mi=(mi+1)%msgs.length; document.getElementById("loadmsg").textContent=msgs[mi]; }, 1800);
+      const ticker = setInterval(() => { mi=(mi+1)%msgs.length; document.getElementById("loadmsg").textContent=msgs[mi]; }, 1800);
 
       try {
         const res = await fetch("/gerar-roteiro", {
