@@ -57,7 +57,23 @@ Responda APENAS em JSON puro, sem markdown, sem texto fora do JSON:
     });
 
     const data = await response.json();
-    const text = data.content.filter(i => i.type === "text").map(i => i.text).join("");
+
+    // Log para debug
+    console.log("Resposta API:", JSON.stringify(data).slice(0, 500));
+
+    if (data.error) {
+      console.error("Erro da API:", data.error);
+      return res.status(500).json({ error: data.error.message || "Erro da API" });
+    }
+
+    const content = data.content || [];
+    const text = content.filter(i => i.type === "text").map(i => i.text).join("");
+
+    if (!text) {
+      console.error("Sem texto na resposta:", JSON.stringify(content));
+      return res.status(500).json({ error: "Resposta vazia da API" });
+    }
+
     const clean = text.replace(/```json|```/g, "").trim();
     const parsed = JSON.parse(clean);
     res.json(parsed);
