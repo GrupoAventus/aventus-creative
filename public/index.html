@@ -17,12 +17,12 @@
     .app{display:grid;grid-template-columns:200px 1fr;min-height:100vh}
 
     /* SIDEBAR */
-    .sidebar{background:var(--bg2);border-right:1px solid var(--bd);display:flex;flex-direction:column;position:sticky;top:0;height:100vh;overflow:hidden}
+    .sidebar{background:var(--bg2);border-right:1px solid var(--bd);display:flex;flex-direction:column;position:sticky;top:0;height:100vh;overflow-y:auto;overflow-x:hidden}
     .logo{padding:20px 20px 16px;border-bottom:1px solid var(--bd)}
     .logo-text{font-size:17px;font-weight:700;letter-spacing:-.3px}
     .logo-text span{color:var(--or)}
     .logo-sub{font-size:10px;color:var(--tx3);letter-spacing:1px;text-transform:uppercase;margin-top:2px}
-    .nav{padding:10px 10px;flex:1;overflow-y:auto}
+    .nav{padding:10px 10px;flex:1;overflow-y:visible}
     .nav-group{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--tx3);padding:12px 8px 5px;font-weight:700}
     .nav-btn{display:flex;align-items:center;gap:9px;width:100%;padding:9px 10px;border-radius:7px;border:none;background:none;color:var(--tx2);font-family:system-ui,sans-serif;font-size:12.5px;font-weight:500;cursor:pointer;margin-bottom:1px;transition:all .15s;text-align:left}
     .nav-btn:hover{background:var(--bg3);color:var(--tx)}
