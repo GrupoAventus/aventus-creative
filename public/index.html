@@ -5,6 +5,15 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Gerador de Roteiro Viral</title>
   <style>
+    .lock-screen { position:fixed; inset:0; background:#0a0a0a; display:flex; flex-direction:column; align-items:center; justify-content:center; z-index:9999; }
+    .lock-box { background:#111; border:1px solid #1f1f1f; border-radius:20px; padding:2.5rem 2rem; width:100%; max-width:360px; text-align:center; }
+    .lock-icon { font-size:36px; margin-bottom:16px; }
+    .lock-title { font-size:22px; font-weight:700; margin-bottom:6px; }
+    .lock-sub { font-size:14px; color:#555; margin-bottom:24px; }
+    .lock-input { width:100%; padding:12px 14px; font-size:16px; border:1px solid #222; border-radius:10px; background:#0d0d0d; color:#fff; font-family:inherit; outline:none; text-align:center; letter-spacing:3px; box-sizing:border-box; transition:border-color 0.2s; }
+    .lock-input:focus { border-color:#ff6b00; }
+    .lock-btn { width:100%; margin-top:12px; padding:12px; font-size:15px; font-weight:600; cursor:pointer; border:none; border-radius:10px; background:linear-gradient(135deg,#ff6b00,#ff8c00); color:#fff; }
+    .lock-error { color:#ff4444; font-size:13px; margin-top:10px; display:none; }
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     body { background: #0a0a0a; color: #fff; font-family: system-ui, sans-serif; min-height: 100vh; padding: 2rem 1.5rem; }
     .badge { display: inline-flex; align-items: center; gap: 6px; background: #1a1a1a; border: 1px solid #2a2a2a; border-radius: 20px; padding: 4px 12px; font-size: 12px; color: #888; margin-bottom: 24px; }
@@ -47,6 +56,19 @@
   </style>
 </head>
 <body>
+
+  <!-- TELA DE SENHA -->
+  <div class="lock-screen" id="lockScreen">
+    <div class="lock-box">
+      <div class="lock-icon">🔐</div>
+      <div class="lock-title">Roteiro <span class="accent">Viral</span></div>
+      <div class="lock-sub">Digite a senha para acessar</div>
+      <input class="lock-input" type="password" id="senhaInput" placeholder="••••••••" onkeydown="if(event.key==='Enter')verificarSenha()" />
+      <button class="lock-btn" onclick="verificarSenha()">Entrar</button>
+      <div class="lock-error" id="lockError">Senha incorreta. Tente novamente.</div>
+    </div>
+  </div>
+
   <div class="badge"><div class="dot"></div> Instagram Reels · Negócios & Empreendedorismo</div>
   <h1>Roteiro <span class="accent">Viral</span></h1>
   <p class="sub">Jogue uma ideia, a IA pesquisa e monta seu roteiro com estrutura de tempo + gancho estratégico.</p>
@@ -78,6 +100,22 @@
   <div class="result" id="result"></div>
 
   <script>
+    // ======= DEFINA SUA SENHA AQUI =======
+    const SENHA_CORRETA = "aventus2025";
+    // =====================================
+
+    function verificarSenha() {
+      const input = document.getElementById("senhaInput").value;
+      const erro = document.getElementById("lockError");
+      if (input === SENHA_CORRETA) {
+        document.getElementById("lockScreen").style.display = "none";
+      } else {
+        erro.style.display = "block";
+        document.getElementById("senhaInput").value = "";
+        document.getElementById("senhaInput").focus();
+      }
+    }
+
     const CORES = ["#ff6b00","#ff7a00","#ff8c00","#e65c00","#cc5200"];
     const TIPOS = ["Negativo","Contraintuitivo","Curiosidade","Polêmica","Pergunta: Você sabia que...","Autoridade","Storytelling","Identificação","Frases de Impacto","Urgência","Visual"];
     const STEPS = [
