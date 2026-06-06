@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Aventus Creative_</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: #0a0a0a; color: #fff; font-family: system-ui, sans-serif; min-height: 100vh; padding: 2rem 1.5rem; }
+
+    /* LOCK */
+    .lock-screen { position:fixed; inset:0; background:#0a0a0a; display:flex; flex-direction:column; align-items:center; justify-content:center; z-index:9999; }
+    .lock-box { background:#111; border:1px solid #1f1f1f; border-radius:20px; padding:2.5rem 2rem; width:100%; max-width:380px; text-align:center; }
+    .lock-logo { font-size:22px; font-weight:700; margin-bottom:4px; }
+    .lock-sub { font-size:13px; color:#555; margin-bottom:28px; }
+    .lock-field { text-align:left; margin-bottom:14px; }
+    .lock-label { font-size:11px; color:#555; font-weight:500; text-transform:uppercase; letter-spacing:1px; margin-bottom:6px; display:block; }
+    .lock-input { width:100%; padding:11px 14px; font-size:15px; border:1px solid #222; border-radius:10px; background:#0d0d0d; color:#fff; font-family:inherit; outline:none; transition:border-color 0.2s; }
+    .lock-input:focus { border-color:#ff6b00; }
+    .lock-btn { width:100%; margin-top:6px; padding:12px; font-size:15px; font-weight:600; cursor:pointer; border:none; border-radius:10px; background:linear-gradient(135deg,#ff6b00,#ff8c00); color:#fff; }
+    .lock-btn:disabled { background:#2a2a2a; color:#555; cursor:not-allowed; }
+    .lock-error { color:#ff4444; font-size:13px; margin-top:10px; display:none; }
+
+    /* HUB NAV */
+    .hub-nav { display:flex; gap:10px; margin-bottom:32px; }
+    .hub-btn { flex:1; padding:12px; font-size:14px; font-weight:600; cursor:pointer; border:1px solid #222; border-radius:12px; background:#111; color:#555; transition:all 0.2s; text-align:center; }
+    .hub-btn.active { background:#ff6b0015; border-color:#ff6b00; color:#ff6b00; }
+    .hub-btn:hover:not(.active) { border-color:#333; color:#aaa; }
+
+    /* APP */
+    .page { display:none; }
+    .page.active { display:block; }
+    .badge { display:inline-flex; align-items:center; gap:6px; background:#1a1a1a; border:1px solid #2a2a2a; border-radius:20px; padding:4px 12px; font-size:12px; color:#888; margin-bottom:24px; }
+    .dot { width:7px; height:7px; border-radius:50%; background:#ff6b00; }
+    h1 { font-size:28px; font-weight:700; margin-bottom:6px; letter-spacing:-0.5px; }
+    .accent { color:#ff6b00; }
+    .sub { font-size:14px; color:#555; margin-bottom:32px; }
+    .card { background:#111; border:1px solid #1f1f1f; border-radius:16px; padding:1.5rem; }
+    label { font-size:12px; color:#555; font-weight:500; text-transform:uppercase; letter-spacing:1px; margin-bottom:8px; display:block; }
+    textarea { width:100%; min-height:90px; font-size:15px; padding:12px 14px; border:1px solid #222; border-radius:10px; background:#0d0d0d; color:#fff; resize:vertical; font-family:inherit; outline:none; transition:border-color 0.2s; }
+    textarea:focus { border-color:#ff6b00; }
+    input[type=text] { width:100%; font-size:15px; padding:12px 14px; border:1px solid #222; border-radius:10px; background:#0d0d0d; color:#fff; font-family:inherit; outline:none; transition:border-color 0.2s; }
+    input[type=text]:focus { border-color:#ff6b00; }
+    .row { display:flex; gap:10px; margin-top:14px; flex-wrap:wrap; align-items:center; }
+    select { flex:1; min-width:130px; font-size:14px; padding:10px 12px; border:1px solid #222; border-radius:10px; background:#0d0d0d; color:#fff; font-family:inherit; outline:none; }
+    .btn { padding:10px 24px; font-size:14px; font-weight:600; cursor:pointer; border:none; border-radius:10px; background:linear-gradient(135deg,#ff6b00,#ff8c00); color:#fff; white-space:nowrap; }
+    .btn:disabled { background:#2a2a2a; color:#555; cursor:not-allowed; }
+    .btn-full { width:100%; margin-top:14px; padding:12px; font-size:15px; }
+    .load-bar { height:3px; background:#1a1a1a; border-radius:2px; overflow:hidden; margin-top:16px; }
+    .load-inner { height:100%; background:#ff6b00; border-radius:2px; animation:grow 2s ease-in-out infinite alternate; }
+    @keyframes grow { from{width:15%} to{width:92%} }
+    .load-msg { font-size:12px; color:#555; margin-top:14px; margin-bottom:6px; }
+    .result { margin-top:24px; display:none; }
+    .time-header { background:#111; border:1px solid #2a2a2a; border-radius:12px; padding:12px 16px; margin-bottom:14px; display:flex; align-items:center; gap:10px; }
+    .time-icon { width:32px; height:32px; background:#ff6b0022; border-radius:6px; display:flex; align-items:center; justify-content:center; font-size:14px; color:#ff6b00; font-weight:700; }
+    .step-card { border:1px solid #1f1f1f; border-radius:12px; padding:14px 16px; margin-bottom:10px; background:#0d0d0d; }
+    .step-card.special { background:#0f0b06; }
+    .step-head { display:flex; align-items:center; gap:10px; margin-bottom:8px; }
+    .step-num { width:26px; height:26px; border-radius:6px; display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:700; flex-shrink:0; }
+    .step-label { font-size:13px; font-weight:600; color:#aaa; }
+    .step-label.special { color:#c8860a; }
+    .step-desc { font-size:11px; color:#333; margin-left:auto; }
+    .step-text { font-size:15px; color:#e8e8e8; line-height:1.7; }
+    .gancho-badge { display:inline-flex; align-items:center; gap:6px; background:#c8860a22; border:1px solid #c8860a44; border-radius:20px; padding:4px 14px; margin-bottom:10px; font-size:13px; font-weight:700; color:#c8860a; }
+    .tipos-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(110px,1fr)); gap:6px; margin-bottom:12px; }
+    .tipo-item { padding:5px 8px; border-radius:6px; font-size:11px; text-align:center; background:#1a1a1a; color:#444; border:1px solid #222; }
+    .tipo-item.ativo { background:#c8860a33; color:#c8860a; border-color:#c8860a55; font-weight:600; }
+    .gancho-exp { font-size:14px; color:#bbb; line-height:1.7; border-top:1px solid #1a1a1a; padding-top:10px; }
+    .gancho-tip { font-size:12px; color:#444; margin-top:8px; font-style:italic; }
+    .copy-btn { width:100%; margin-top:14px; padding:11px; font-size:14px; font-weight:500; cursor:pointer; border:1px solid #2a2a2a; border-radius:10px; background:transparent; color:#555; transition:all 0.2s; }
+    .copy-btn:hover { border-color:#ff6b00; color:#ff6b00; background:#ff6b0015; }
+    .error { color:#ff4444; font-size:13px; margin-top:10px; }
+
+    /* TREND CARDS */
+    .trend-card { border:1px solid #1f1f1f; border-radius:14px; padding:18px; margin-bottom:14px; background:#0d0d0d; border-left:3px solid #ff6b00; }
+    .trend-top { display:flex; align-items:flex-start; justify-content:space-between; gap:12px; margin-bottom:12px; }
+    .trend-num { font-size:11px; color:#ff6b00; font-weight:700; text-transform:uppercase; letter-spacing:1px; margin-bottom:4px; }
+    .trend-title { font-size:16px; font-weight:700; color:#fff; line-height:1.4; }
+    .score-circle { flex-shrink:0; width:56px; height:56px; border-radius:50%; border:2px solid #ff6b00; display:flex; flex-direction:column; align-items:center; justify-content:center; }
+    .score-num { font-size:16px; font-weight:700; color:#ff6b00; line-height:1; }
+    .score-label { font-size:8px; color:#555; text-transform:uppercase; letter-spacing:0.5px; }
+    .trend-tags { display:flex; flex-wrap:wrap; gap:6px; margin-bottom:10px; }
+    .trend-tag { font-size:11px; padding:3px 10px; border-radius:20px; background:#1a1a1a; color:#666; border:1px solid #222; }
+    .trend-tag.hot { background:#ff6b0015; color:#ff6b00; border-color:#ff6b0033; }
+    .trend-info { font-size:14px; color:#aaa; line-height:1.6; margin-bottom:10px; }
+    .trend-dica { font-size:13px; color:#666; line-height:1.6; padding:10px 12px; background:#111; border-radius:8px; border-left:2px solid #ff6b0044; }
+    .trend-dica strong { color:#ff8c00; }
+    .score-bar { height:4px; background:#1a1a1a; border-radius:2px; margin-top:12px; overflow:hidden; }
+    .score-bar-fill { height:100%; border-radius:2px; background:linear-gradient(90deg,#ff6b00,#ff8c00); }
+  </style>
+</head>
+<body>
+
+  <!-- TELA DE LOGIN -->
+  <div class="lock-screen" id="lockScreen">
+    <div class="lock-box">
+      <div class="lock-logo">Aventus <span class="accent">Hub_</span></div>
+      <div class="lock-sub">Faça login para acessar</div>
+      <div class="lock-field">
+        <label class="lock-label">Usuário</label>
+        <input class="lock-input" type="text" id="usuarioInput" placeholder="Seu usuário" onkeydown="if(event.key==='Enter')document.getElementById('senhaInput').focus()" />
+      </div>
+      <div class="lock-field">
+        <label class="lock-label">Senha</label>
+        <input class="lock-input" type="password" id="senhaInput" placeholder="••••••••" onkeydown="if(event.key==='Enter')fazerLogin()" />
+      </div>
+      <button class="lock-btn" id="loginBtn" onclick="fazerLogin()">Entrar</button>
+      <div class="lock-error" id="lockError">Usuário ou senha incorretos.</div>
+    </div>
+  </div>
+
+  <!-- HUB NAV -->
+  <div class="hub-nav">
+    <div class="hub-btn active" id="nav-creative" onclick="trocarPagina('creative')">🎬 Aventus Creative_</div>
+    <div class="hub-btn" id="nav-trend" onclick="trocarPagina('trend')">🔥 Aventus Trend_</div>
+  </div>
+
+  <!-- PÁGINA CREATIVE -->
+  <div class="page active" id="page-creative">
+    <div class="badge"><div class="dot"></div> <span id="badgeText">Instagram Reels</span></div>
+    <h1>Aventus <span class="accent">Creative_</span></h1>
+    <p class="sub">Jogue uma ideia, a IA pesquisa e monta seu roteiro com estrutura de tempo + gancho estratégico.</p>
+
+    <div class="card">
+      <label>Sua ideia ou tema</label>
+      <textarea id="ideia" placeholder="Ex: Por que a maioria dos empreendedores quebra nos primeiros 2 anos..."></textarea>
+      <div class="row">
+        <select id="nicho" onchange="atualizarBadge()">
+          <option value="Negócios & Empreendedorismo">Negócios & Empreendedorismo</option>
+          <option value="Marketing Digital">Marketing Digital</option>
+          <option value="Finanças Pessoais">Finanças Pessoais</option>
+          <option value="Saúde & Bem-estar">Saúde & Bem-estar</option>
+          <option value="Fitness & Emagrecimento">Fitness & Emagrecimento</option>
+          <option value="Beleza & Skincare">Beleza & Skincare</option>
+          <option value="Moda & Estilo">Moda & Estilo</option>
+          <option value="Relacionamentos">Relacionamentos</option>
+        </select>
+        <select id="tom">
+          <option value="direto e provocador">Direto e provocador</option>
+          <option value="educativo e inspirador">Educativo e inspirador</option>
+          <option value="storytelling pessoal">Storytelling pessoal</option>
+          <option value="dados e fatos surpreendentes">Dados e fatos</option>
+        </select>
+        <select id="duracao" style="flex:0 0 80px;min-width:0">
+          <option value="30 segundos">30s</option>
+          <option value="60 segundos" selected>60s</option>
+          <option value="90 segundos">90s</option>
+        </select>
+        <button class="btn" id="btnCreative" onclick="gerarRoteiro()">Gerar roteiro ↗</button>
+      </div>
+      <p class="error" id="errorCreative" style="display:none"></p>
+      <div id="loadingCreative" style="display:none">
+        <p class="load-msg" id="loadmsgCreative">Pesquisando sobre o tema...</p>
+        <div class="load-bar"><div class="load-inner"></div></div>
+      </div>
+    </div>
+    <div class="result" id="resultCreative"></div>
+  </div>
+
+  <!-- PÁGINA TREND -->
+  <div class="page" id="page-trend">
+    <div class="badge"><div class="dot"></div> Trends em tempo real</div>
+    <h1>Aventus <span class="accent">Trend_</span></h1>
+    <p class="sub">Digite seu nicho e a IA vasculha a internet para encontrar as trends com maior potencial de viralização agora.</p>
+
+    <div class="card">
+      <label>Seu nicho</label>
+      <input type="text" id="nichoTrend" placeholder="Ex: emagrecimento, marketing digital, skincare..." onkeydown="if(event.key==='Enter')buscarTrends()" />
+      <button class="btn btn-full" id="btnTrend" onclick="buscarTrends()">🔥 Buscar trends agora</button>
+      <p class="error" id="errorTrend" style="display:none"></p>
+      <div id="loadingTrend" style="display:none">
+        <p class="load-msg" id="loadmsgTrend">Vasculhando a internet...</p>
+        <div class="load-bar"><div class="load-inner"></div></div>
+      </div>
+    </div>
+    <div class="result" id="resultTrend"></div>
+  </div>
+
+  <script>
+    const CORES = ["#ff6b00","#ff7a00","#ff8c00","#e65c00","#cc5200"];
+    const TIPOS = ["Negativo","Contraintuitivo","Curiosidade","Polêmica","Pergunta: Você sabia que...","Autoridade","Storytelling","Identificação","Frases de Impacto","Urgência","Visual"];
+    const STEPS = [
+      { key:"ideia", label:"Ideia Central", num:"1", desc:"O que você quer comunicar" },
+      { key:"gancho", label:"Gancho (0–3s)", num:"2", desc:"Para o scroll imediatamente" },
+      { key:"tipo_gancho", label:"Tipo de Gancho", num:"★", desc:"Estratégia dos 3 primeiros segundos", special:true },
+      { key:"desenvolvimento", label:"Desenvolvimento (4–30s)", num:"3", desc:"Entregue o presságio sem enrolação" },
+      { key:"climax", label:"Clímax (30s–1min)", num:"4", desc:"O insight. A virada. A lição." },
+      { key:"fechamento", label:"Fechamento + CTA (1–1:30min)", num:"5", desc:"Promessa + chamada para ação" },
+    ];
+    const msgsCreative = ["Pesquisando sobre o tema...","Analisando tendências...","Estruturando o roteiro...","Escolhendo o melhor gancho..."];
+    const msgsTrend = ["Vasculhando a internet...","Analisando vídeos virais...","Calculando potencial de viralização...","Selecionando as 3 melhores trends..."];
+
+    function trocarPagina(p) {
+      document.querySelectorAll('.page').forEach(el => el.classList.remove('active'));
+      document.querySelectorAll('.hub-btn').forEach(el => el.classList.remove('active'));
+      document.getElementById('page-' + p).classList.add('active');
+      document.getElementById('nav-' + p).classList.add('active');
+    }
+
+    async function fazerLogin() {
+      const usuario = document.getElementById("usuarioInput").value.trim();
+      const senha = document.getElementById("senhaInput").value;
+      const btn = document.getElementById("loginBtn");
+      const erro = document.getElementById("lockError");
+      if (!usuario || !senha) return;
+      btn.disabled = true; btn.textContent = "Entrando...";
+      erro.style.display = "none";
+      try {
+        const res = await fetch("/login", {
+          method: "POST", headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ usuario, senha })
+        });
+        const data = await res.json();
+        if (data.ok) {
+          document.getElementById("lockScreen").style.display = "none";
+        } else {
+          erro.style.display = "block";
+          document.getElementById("senhaInput").value = "";
+        }
+      } catch(e) {
+        erro.textContent = "Erro de conexão. Tente novamente.";
+        erro.style.display = "block";
+      } finally {
+        btn.disabled = false; btn.textContent = "Entrar";
+      }
+    }
+
+    function atualizarBadge() {
+      document.getElementById("badgeText").textContent = "Instagram Reels · " + document.getElementById("nicho").value;
+    }
+
+    async function gerarRoteiro() {
+      const ideia = document.getElementById("ideia").value.trim();
+      if (!ideia) return;
+      const tom = document.getElementById("tom").value;
+      const duracao = document.getElementById("duracao").value;
+      const nicho = document.getElementById("nicho").value;
+      const btn = document.getElementById("btnCreative");
+      const err = document.getElementById("errorCreative");
+      const loading = document.getElementById("loadingCreative");
+      const result = document.getElementById("resultCreative");
+      btn.disabled = true; btn.textContent = "Gerando...";
+      err.style.display = "none"; loading.style.display = "block"; result.style.display = "none";
+      let mi = 0;
+      const ticker = setInterval(() => { mi=(mi+1)%msgsCreative.length; document.getElementById("loadmsgCreative").textContent=msgsCreative[mi]; }, 1800);
+      try {
+        const res = await fetch("/gerar-roteiro", {
+          method: "POST", headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ ideia, tom, duracao, nicho })
+        });
+        const data = await res.json();
+        if (data.error) throw new Error(data.error);
+        renderRoteiro(data);
+      } catch(e) {
+        err.textContent = "Erro ao gerar roteiro. Tente novamente.";
+        err.style.display = "block";
+      } finally {
+        clearInterval(ticker); loading.style.display = "none";
+        btn.disabled = false; btn.textContent = "Gerar roteiro ↗";
+      }
+    }
+
+    async function buscarTrends() {
+      const nicho = document.getElementById("nichoTrend").value.trim();
+      if (!nicho) return;
+      const btn = document.getElementById("btnTrend");
+      const err = document.getElementById("errorTrend");
+      const loading = document.getElementById("loadingTrend");
+      const result = document.getElementById("resultTrend");
+      btn.disabled = true; btn.textContent = "Buscando...";
+      err.style.display = "none"; loading.style.display = "block"; result.style.display = "none";
+      let mi = 0;
+      const ticker = setInterval(() => { mi=(mi+1)%msgsTrend.length; document.getElementById("loadmsgTrend").textContent=msgsTrend[mi]; }, 1800);
+      try {
+        const res = await fetch("/buscar-trends", {
+          method: "POST", headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ nicho })
+        });
+        const data = await res.json();
+        if (data.error) throw new Error(data.error);
+        renderTrends(data.trends);
+      } catch(e) {
+        err.textContent = "Erro ao buscar trends. Tente novamente.";
+        err.style.display = "block";
+      } finally {
+        clearInterval(ticker); loading.style.display = "none";
+        btn.disabled = false; btn.textContent = "🔥 Buscar trends agora";
+      }
+    }
+
+    function renderRoteiro(data) {
+      const result = document.getElementById("resultCreative");
+      let html = `<div class="time-header"><div class="time-icon">⏱</div><div><div style="font-size:13px;font-weight:600;color:#ccc">Estrutura de tempo do Reel</div><div style="font-size:11px;color:#444">Gancho → Desenvolvimento → Clímax → Fechamento + CTA</div></div></div>`;
+      STEPS.forEach((s, i) => {
+        const cor = s.special ? "#c8860a" : CORES[i % CORES.length];
+        html += `<div class="step-card${s.special?' special':''}" style="border-left:3px solid ${cor}">
+          <div class="step-head">
+            <div class="step-num" style="background:${cor}22;color:${cor}">${s.num}</div>
+            <span class="step-label${s.special?' special':''}">${s.label}</span>
+            <span class="step-desc">${s.desc}</span>
+          </div>`;
+        if (s.special) {
+          const txt = data[s.key] || "";
+          const partes = txt.split(/\s*[:\-–]\s*/);
+          const tipo = partes[0] || txt;
+          const exp = partes.slice(1).join(" ") || "";
+          html += `<div class="gancho-badge">Tipo: ${tipo}</div>
+            <div class="tipos-grid">${TIPOS.map((g,gi) => `<div class="tipo-item${tipo.toLowerCase().includes(g.toLowerCase().split(":")[0].trim())?' ativo':''}">${gi+1}. ${g}</div>`).join("")}</div>
+            ${exp ? `<p class="gancho-exp">${exp}</p>` : ""}
+            <p class="gancho-tip">Combine Visual + Textual + Sonoro para máxima retenção nos primeiros 3 segundos.</p>`;
+        } else {
+          html += `<p class="step-text">${data[s.key]}</p>`;
+        }
+        html += `</div>`;
+      });
+      // Legenda
+      if (data.legenda) {
+        html += `<div class="step-card" style="border-left:3px solid #9b59b6; margin-top:6px;">
+          <div class="step-head">
+            <div class="step-num" style="background:#9b59b622;color:#9b59b6">✍</div>
+            <span class="step-label">Legenda do Post</span>
+            <span class="step-desc">Pronta para copiar</span>
+          </div>
+          <p class="step-text" style="white-space:pre-line">${data.legenda}</p>
+          ${data.hashtags ? `<div style="margin-top:12px;padding-top:10px;border-top:1px solid #1a1a1a;font-size:13px;color:#666;line-height:1.8;">${data.hashtags}</div>` : ""}
+        </div>`;
+      }
+
+      html += `<button class="copy-btn" onclick="copiarRoteiro()">Copiar roteiro completo</button>
+      <button class="copy-btn" style="margin-top:8px" onclick="copiarLegenda()">Copiar legenda + hashtags</button>`;
+      result.innerHTML = html; result.style.display = "block";
+      window._roteiro = data;
+    }
+
+    function renderTrends(trends) {
+      const result = document.getElementById("resultTrend");
+      let html = `<div style="font-size:12px;color:#444;margin-bottom:14px;text-transform:uppercase;letter-spacing:1px;">🔥 Top 3 trends com maior potencial agora</div>`;
+      trends.forEach((t, i) => {
+        const score = t.score || 0;
+        const cor = score >= 80 ? "#ff4500" : score >= 60 ? "#ff6b00" : "#ff8c00";
+        html += `<div class="trend-card" style="border-left-color:${cor}">
+          <div class="trend-top">
+            <div>
+              <div class="trend-num">Trend #${i+1}</div>
+              <div class="trend-title">${t.titulo}</div>
+            </div>
+            <div class="score-circle" style="border-color:${cor}">
+              <div class="score-num" style="color:${cor}">${score}</div>
+              <div class="score-label">score</div>
+            </div>
+          </div>
+          <div class="trend-tags">
+            ${(t.plataformas||[]).map(p => `<span class="trend-tag hot">${p}</span>`).join("")}
+            ${(t.tags||[]).map(tag => `<span class="trend-tag">${tag}</span>`).join("")}
+          </div>
+          <div class="trend-info">${t.descricao}</div>
+          <div class="trend-dica"><strong>💡 Como usar:</strong> ${t.como_usar}</div>
+          <div class="score-bar"><div class="score-bar-fill" style="width:${score}%;background:linear-gradient(90deg,${cor},#ffaa00)"></div></div>
+        </div>`;
+      });
+      result.innerHTML = html; result.style.display = "block";
+    }
+
+    function copiarLegenda() {
+      if (!window._roteiro) return;
+      const txt = (window._roteiro.legenda || "") + "\n\n" + (window._roteiro.hashtags || "");
+      navigator.clipboard.writeText(txt).then(() => {
+        const btns = document.querySelectorAll(".copy-btn");
+        btns[1].textContent = "✓ Copiado!"; btns[1].style.color="#ff6b00"; btns[1].style.borderColor="#ff6b00";
+        setTimeout(() => { btns[1].textContent="Copiar legenda + hashtags"; btns[1].style.color=""; btns[1].style.borderColor=""; }, 2500);
+      });
+    }
+      if (!window._roteiro) return;
+      const labels = { ideia:"IDEIA", gancho:"GANCHO", tipo_gancho:"TIPO DE GANCHO", desenvolvimento:"DESENVOLVIMENTO", climax:"CLÍMAX", fechamento:"FECHAMENTO + CTA" };
+      const txt = STEPS.map(s => `${labels[s.key]}\n${window._roteiro[s.key]}`).join("\n\n");
+      navigator.clipboard.writeText(txt).then(() => {
+        const btn = document.querySelector(".copy-btn");
+        btn.textContent = "✓ Copiado!"; btn.style.color="#ff6b00"; btn.style.borderColor="#ff6b00";
+        setTimeout(() => { btn.textContent="Copiar roteiro completo"; btn.style.color=""; btn.style.borderColor=""; }, 2500);
+      });
+    }
+  </script>
+</body>
+</html>
