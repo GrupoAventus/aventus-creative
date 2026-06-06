@@ -8,9 +8,10 @@ app.use(express.json());
 app.use(express.static("public")); // serve o frontend
 
 app.post("/gerar-roteiro", async (req, res) => {
-  const { ideia, tom, duracao } = req.body;
+  const { ideia, tom, duracao, nicho } = req.body;
 
   if (!ideia) return res.status(400).json({ error: "Ideia obrigatória" });
+  const nichoSelecionado = nicho || "Negócios & Empreendedorismo";
 
   const GANCHO_TIPOS = [
     "Negativo", "Contraintuitivo", "Curiosidade", "Polêmica",
