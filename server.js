@@ -99,8 +99,13 @@ Responda APENAS em JSON puro, sem markdown, sem texto fora do JSON:
       return res.status(500).json({ error: "Resposta vazia da API" });
     }
 
-    const clean = text.replace(/```json|```/g, "").trim();
-    const parsed = JSON.parse(clean);
+    // Extrai JSON mesmo se tiver texto antes/depois
+    const jsonMatch = text.match(/\{[\s\S]*\}/);
+    if (!jsonMatch) {
+      console.error("JSON não encontrado na resposta:", text);
+      return res.status(500).json({ error: "Formato de resposta inválido" });
+    }
+    const parsed = JSON.parse(jsonMatch[0]);
     res.json(parsed);
   } catch (e) {
     console.error("Erro:", e);
