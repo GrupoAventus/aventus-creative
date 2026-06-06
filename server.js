@@ -7,6 +7,31 @@ app.use(cors());
 app.use(express.json());
 app.use(express.static("public"));
 
+// ======= USUÁRIOS E SENHAS =======
+const USUARIOS = {
+  "squad01": "aventus",
+  "squad02": "aventus",
+  "brunoguedes": "aventus",
+  "heloisa": "aventus",
+  "moldandoinox": "aventus",
+  "fernando": "aventus",
+  "romulo": "aventus",
+  "darlene": "aventus",
+  "joel": "aventus",
+  "construart": "aventus",
+};
+// =================================
+
+app.post("/login", (req, res) => {
+  const { usuario, senha } = req.body;
+  const u = usuario.toLowerCase().replace(/\s+/g, "");
+  if (USUARIOS[u] && USUARIOS[u] === senha) {
+    res.json({ ok: true });
+  } else {
+    res.status(401).json({ ok: false, error: "Usuário ou senha incorretos." });
+  }
+});
+
 app.post("/gerar-roteiro", async (req, res) => {
   const { ideia, tom, duracao, nicho } = req.body;
   if (!ideia) return res.status(400).json({ error: "Ideia obrigatória" });
