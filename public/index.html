@@ -90,7 +90,6 @@
     .follow-msg { font-size:15px; color:#e8e8e8; line-height:1.7; white-space:pre-line; }
     .follow-tip { font-size:12px; color:#555; margin-top:8px; font-style:italic; border-top:1px solid #1a1a1a; padding-top:8px; }
     .follow-action-only { font-size:14px; color:#ff8c00; padding:10px 16px; background:#0d0d0d; font-style:italic; }
-    /* PROPOSAL */
     .slide-card { border:1px solid #1f1f1f; border-radius:14px; margin-bottom:14px; overflow:hidden; }
     .slide-header { display:flex; align-items:center; gap:12px; padding:14px 18px; background:#111; border-bottom:1px solid #1a1a1a; }
     .slide-num { width:32px; height:32px; border-radius:8px; background:#ff6b0022; color:#ff6b00; border:1px solid #ff6b0033; display:flex; align-items:center; justify-content:center; font-size:13px; font-weight:700; flex-shrink:0; }
@@ -98,7 +97,6 @@
     .slide-subtitle { font-size:11px; color:#444; margin-left:auto; }
     .slide-body { padding:16px 18px; background:#0d0d0d; }
     .slide-content { font-size:15px; color:#e8e8e8; line-height:1.8; white-space:pre-line; }
-    .slide-tag { display:inline-flex; align-items:center; gap:4px; font-size:11px; padding:3px 10px; border-radius:20px; background:#ff6b0015; color:#ff6b00; border:1px solid #ff6b0033; margin-bottom:10px; }
     .slide-price { font-size:32px; font-weight:800; color:#ff6b00; text-align:center; padding:20px; letter-spacing:-1px; }
     .slide-price-label { font-size:12px; color:#555; text-align:center; margin-top:-10px; margin-bottom:10px; }
   </style>
@@ -122,48 +120,40 @@
     </div>
   </div>
 
-  <!-- HUB GRID -->
   <div style="margin-bottom:32px">
     <div style="font-size:11px;color:#444;text-transform:uppercase;letter-spacing:1px;margin-bottom:16px">Escolha uma ferramenta</div>
     <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px">
-
       <div class="hub-card active" id="nav-creative" onclick="trocarPagina('creative')">
         <div class="hub-card-icon">🎬</div>
         <div class="hub-card-name">Creative_</div>
         <div class="hub-card-desc">Gera roteiros virais para Reels com gancho, estrutura de tempo e legenda pronta</div>
       </div>
-
       <div class="hub-card" id="nav-trend" onclick="trocarPagina('trend')">
         <div class="hub-card-icon">🔥</div>
         <div class="hub-card-name">Trend_</div>
         <div class="hub-card-desc">Vasculha a internet e encontra as 3 trends com maior potencial de viralização agora</div>
       </div>
-
       <div class="hub-card" id="nav-follow" onclick="trocarPagina('follow')">
         <div class="hub-card-icon">💬 <span style="font-size:10px;background:#ff6b0022;color:#ff6b00;border:1px solid #ff6b0044;border-radius:10px;padding:2px 6px;vertical-align:middle">🔒 Premium</span></div>
         <div class="hub-card-name">Follow_</div>
         <div class="hub-card-desc">Gera toda a sequência de follow-up do Padrão Aventus personalizada para o seu nicho</div>
       </div>
-
       <div class="hub-card" id="nav-proposal" onclick="trocarPagina('proposal')">
         <div class="hub-card-icon">📊 <span style="font-size:10px;background:#ff6b0022;color:#ff6b00;border:1px solid #ff6b0044;border-radius:10px;padding:2px 6px;vertical-align:middle">🔒 Premium</span></div>
         <div class="hub-card-name">Proposal_</div>
         <div class="hub-card-desc">Monta sua proposta comercial completa em slides pelo Método Aventus Digital</div>
       </div>
-
       <div class="hub-card" id="nav-class" onclick="abrirClass()">
         <div class="hub-card-icon">🎓</div>
         <div class="hub-card-name">Class_</div>
         <div class="hub-card-desc">Acesse as aulas gravadas exclusivas da Aventus no Google Drive</div>
         <div style="margin-top:10px;font-size:11px;color:#ff6b00;font-weight:600">Acessar aulas →</div>
       </div>
-
     </div>
   </div>
 
-  <!-- CREATIVE -->
   <div class="page active" id="page-creative">
-    <div class="badge"><div class="dot"></div> <span id="badgeText">Instagram Reels</span></div>
+    <div class="badge"><div class="dot"></div> <span id="badgeText">Vídeo Viral</span></div>
     <h1>Aventus <span class="accent">Creative_</span></h1>
     <p class="sub">Jogue uma ideia, a IA pesquisa e monta seu roteiro com estrutura de tempo + gancho estratégico.</p>
     <div class="card">
@@ -196,7 +186,6 @@
     <div class="result" id="resultCreative"></div>
   </div>
 
-  <!-- TREND -->
   <div class="page" id="page-trend">
     <div class="badge"><div class="dot"></div> Trends + Casos em tempo real</div>
     <h1>Aventus <span class="accent">Trend_</span></h1>
@@ -214,7 +203,6 @@
     <div class="result" id="resultTrend"></div>
   </div>
 
-  <!-- FOLLOW -->
   <div class="page" id="page-follow">
     <div class="badge"><div class="dot"></div> Padrão Aventus de Follow-up</div>
     <h1>Aventus <span class="accent">Follow_</span></h1>
@@ -234,7 +222,6 @@
     <div class="result" id="resultFollow"></div>
   </div>
 
-  <!-- PROPOSAL -->
   <div class="page" id="page-proposal">
     <div class="badge"><div class="dot"></div> Método Aventus Digital</div>
     <h1>Aventus <span class="accent">Proposal_</span></h1>
@@ -242,37 +229,26 @@
     <div class="card">
       <label>1. Seu principal diferencial</label>
       <textarea id="p_diferencial" placeholder="O que te diferencia das outras empresas?" style="min-height:70px"></textarea>
-
       <label style="margin-top:14px">2. Problema do mercado</label>
       <textarea id="p_problema" placeholder="Qual dor seu cliente enfrenta no dia a dia?" style="min-height:70px"></textarea>
-
       <label style="margin-top:14px">3. Ciclo vicioso</label>
       <textarea id="p_ciclo" placeholder="Por que seu cliente não consegue resolver esse problema sozinho?" style="min-height:70px"></textarea>
-
       <label style="margin-top:14px">4. Sua solução</label>
       <textarea id="p_solucao" placeholder="Como você resolve esse problema de forma diferente?" style="min-height:70px"></textarea>
-
       <label style="margin-top:14px">5. Suas credenciais</label>
       <textarea id="p_credenciais" placeholder="Formação, anos de experiência, certificações..." style="min-height:70px"></textarea>
-
       <label style="margin-top:14px">6. Endereço / onde encontrar</label>
       <input type="text" id="p_endereco" placeholder="Cidade, estado, site, redes sociais..." />
-
       <label style="margin-top:14px">7. Indicadores da empresa</label>
       <textarea id="p_indicadores" placeholder="Ex: 500 alunos formados, R$2M gerados para clientes..." style="min-height:70px"></textarea>
-
       <label style="margin-top:14px">8. Método e entregáveis</label>
       <textarea id="p_metodo" placeholder="O que você entrega e como funciona seu método..." style="min-height:70px"></textarea>
-
       <label style="margin-top:14px">9. Quem é seu cliente ideal (ICP)</label>
       <textarea id="p_icp" placeholder="Profissão, idade, dores, sonhos, comportamento..." style="min-height:70px"></textarea>
-
       <label style="margin-top:14px">10. Preço cheio (com todas as entregas)</label>
       <input type="text" id="p_preco_caro" placeholder="Ex: R$ 12.000 — inclui mentoria, ferramentas, suporte..." />
-
       <label style="margin-top:14px">11. Preço protagonista (valor real)</label>
       <input type="text" id="p_preco_final" placeholder="Ex: R$ 4.997" />
-
       <button class="btn btn-full" id="btnProposal" onclick="gerarProposta()">📊 Gerar proposta comercial</button>
       <p class="error" id="errorProposal" style="display:none"></p>
       <div id="loadingProposal" style="display:none">
@@ -284,6 +260,9 @@
   </div>
 
   <script>
+    const CORES = ["#ff6b00","#ff7a00","#ff8c00","#e65c00","#cc5200"];
+    const TIPOS = ["Negativo","Contraintuitivo","Curiosidade","Polêmica","Pergunta: Você sabia que...","Autoridade","Storytelling","Identificação","Frases de Impacto","Urgência","Visual"];
+
     const STEPS_VIRAL = [
       { key:"ideia", label:"Ideia Central", num:"1", desc:"O que você quer comunicar" },
       { key:"gancho", label:"Gancho (0–3s)", num:"2", desc:"Para o scroll imediatamente" },
@@ -292,6 +271,7 @@
       { key:"climax", label:"Clímax (30s–1min)", num:"4", desc:"O insight. A virada. A lição." },
       { key:"fechamento", label:"Fechamento + CTA (1–1:30min)", num:"5", desc:"Promessa + chamada para ação" },
     ];
+
     const STEPS_ANUNCIO = [
       { key:"ideia", label:"Tema Central", num:"1", desc:"O que o anúncio comunica" },
       { key:"gancho", label:"Abertura (0–3s)", num:"2", desc:"Ataca a dor imediatamente" },
@@ -300,20 +280,22 @@
       { key:"climax", label:"Seu Diferencial", num:"4", desc:"Por que você é diferente" },
       { key:"fechamento", label:"CTA Justificado", num:"5", desc:"O que fazer e POR QUE fazer" },
     ];
-    const STEPS = STEPS_VIRAL; // default
+
     const msgsCreative = ["Pesquisando sobre o tema...","Analisando tendências...","Estruturando o roteiro...","Escolhendo o melhor gancho..."];
     const msgsTrend = ["Vasculhando a internet...","Analisando vídeos virais...","Calculando potencial...","Selecionando as 3 melhores..."];
     const msgsFollow = ["Analisando o nicho...","Montando a sequência...","Personalizando mensagens...","Finalizando o follow-up..."];
     const msgsProposal = ["Analisando seu negócio...","Pesquisando o mercado...","Montando os slides...","Finalizando a proposta..."];
 
-    // Controle de acesso premium
     const SENHA_PREMIUM = "acessofull";
     let premiumLiberado = false;
 
+    function esc(str) {
+      return (str || "").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+    }
+
     function trocarPagina(p) {
       if ((p === "follow" || p === "proposal") && !premiumLiberado) {
-        pedirSenhaPremium(p);
-        return;
+        pedirSenhaPremium(p); return;
       }
       document.querySelectorAll('.page').forEach(el => el.classList.remove('active'));
       document.querySelectorAll('.hub-card').forEach(el => el.classList.remove('active'));
@@ -369,9 +351,8 @@
     }
 
     function atualizarBadge() {
-      const nicho = document.getElementById("nicho").value;
-      const label = nicho === "anuncio" ? "Criativo para Anúncio" : "Vídeo Viral";
-      document.getElementById("badgeText").textContent = label;
+      const v = document.getElementById("nicho").value;
+      document.getElementById("badgeText").textContent = v === "anuncio" ? "Criativo para Anúncio" : "Vídeo Viral";
     }
 
     async function gerarRoteiro() {
@@ -395,7 +376,7 @@
         });
         const data = await res.json();
         if (data.error) throw new Error(data.error);
-        renderRoteiro(data);
+        renderRoteiro(data, nicho);
       } catch(e) {
         err.textContent = "Erro ao gerar roteiro. Tente novamente.";
         err.style.display = "block";
@@ -502,24 +483,20 @@
       }
     }
 
-    const CORES = ["#ff6b00","#ff7a00","#ff8c00","#e65c00","#cc5200"];
-    const TIPOS = ["Negativo","Contraintuitivo","Curiosidade","Polêmica","Pergunta: Você sabia que...","Autoridade","Storytelling","Identificação","Frases de Impacto","Urgência","Visual"];
-
-    function esc(str) {
-      return (str || "").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
-    }
-
-    function renderRoteiro(data) {
-      const isAnuncio = document.getElementById("nicho").value === "anuncio";
+    function renderRoteiro(data, nicho) {
+      const isAnuncio = nicho === "anuncio";
       const steps = isAnuncio ? STEPS_ANUNCIO : STEPS_VIRAL;
       const result = document.getElementById("resultCreative");
-      let html = `<div class="time-header"><div class="time-icon">${isAnuncio ? "📣" : "⏱"}</div><div><div style="font-size:13px;font-weight:600;color:#ccc">${isAnuncio ? "Estrutura do Criativo para Anúncio" : "Estrutura de tempo do Reel"}</div><div style="font-size:11px;color:#444">${isAnuncio ? "Dor → Diferencial → CTA Justificado" : "Gancho → Desenvolvimento → Clímax → Fechamento + CTA"}</div></div></div>`;
+      let html = `<div class="time-header"><div class="time-icon">${isAnuncio?"📣":"⏱"}</div><div>
+        <div style="font-size:13px;font-weight:600;color:#ccc">${isAnuncio?"Estrutura do Criativo para Anúncio":"Estrutura de tempo do Reel"}</div>
+        <div style="font-size:11px;color:#444">${isAnuncio?"Dor → Diferencial → CTA Justificado":"Gancho → Desenvolvimento → Clímax → Fechamento + CTA"}</div>
+      </div></div>`;
       steps.forEach((s, i) => {
         const cor = s.special ? "#c8860a" : CORES[i % CORES.length];
-        html += `<div class="step-card${s.special?' special':''}" style="border-left:3px solid ${cor}">
+        html += `<div class="step-card${s.special?" special":""}" style="border-left:3px solid ${cor}">
           <div class="step-head">
             <div class="step-num" style="background:${cor}22;color:${cor}">${s.num}</div>
-            <span class="step-label${s.special?' special':''}">${s.label}</span>
+            <span class="step-label${s.special?" special":""}">${s.label}</span>
             <span class="step-desc">${s.desc}</span>
           </div>`;
         if (s.special) {
@@ -527,8 +504,8 @@
           const partes = txt.split(/\s*[:\-–]\s*/);
           const tipo = partes[0] || txt;
           const exp = partes.slice(1).join(" ") || "";
-          html += `<div class="gancho-badge">Tipo: ${tipo}</div>
-            <div class="tipos-grid">${TIPOS.map((g,gi) => `<div class="tipo-item${tipo.toLowerCase().includes(g.toLowerCase().split(":")[0].trim())?' ativo':''}">${gi+1}. ${g}</div>`).join("")}</div>
+          html += `<div class="gancho-badge">Tipo: ${esc(tipo)}</div>
+            <div class="tipos-grid">${TIPOS.map((g,gi) => `<div class="tipo-item${tipo.toLowerCase().includes(g.toLowerCase().split(":")[0].trim())?" ativo":""}">${gi+1}. ${g}</div>`).join("")}</div>
             ${exp ? `<p class="gancho-exp">${esc(exp)}</p>` : ""}
             <p class="gancho-tip">Combine Visual + Textual + Sonoro para máxima retenção nos primeiros 3 segundos.</p>`;
         } else {
@@ -544,7 +521,7 @@
             <span class="step-desc">Pronta para copiar</span>
           </div>
           <p class="step-text" style="white-space:pre-line">${esc(data.legenda)}</p>
-          ${data.hashtags ? `<div style="margin-top:12px;padding-top:10px;border-top:1px solid #1a1a1a;font-size:13px;color:#666;line-height:1.8;">${esc(data.hashtags)}</div>` : ""}
+          ${data.hashtags?`<div style="margin-top:12px;padding-top:10px;border-top:1px solid #1a1a1a;font-size:13px;color:#666;line-height:1.8;">${esc(data.hashtags)}</div>`:""}
         </div>`;
       }
       html += `<button class="copy-btn" onclick="copiarRoteiro()">Copiar roteiro completo</button>`;
@@ -559,57 +536,50 @@
       const result = document.getElementById("resultTrend");
       const trends = data.trends || [];
       const casos = data.casos || [];
-
       let html = `<div style="font-size:12px;color:#444;margin-bottom:14px;text-transform:uppercase;letter-spacing:1px;">🔥 Top 3 trends com maior potencial agora</div>`;
       trends.forEach((t, i) => {
         const score = t.score || 0;
         const cor = score >= 80 ? "#ff4500" : score >= 60 ? "#ff6b00" : "#ff8c00";
         html += `<div class="trend-card" style="border-left-color:${cor}">
           <div class="trend-top">
-            <div><div class="trend-num">Trend #${i+1}</div><div class="trend-title">${t.titulo}</div></div>
+            <div><div class="trend-num">Trend #${i+1}</div><div class="trend-title">${esc(t.titulo)}</div></div>
             <div class="score-circle" style="border-color:${cor}"><div class="score-num" style="color:${cor}">${score}</div><div class="score-label">score</div></div>
           </div>
           <div class="trend-tags">
-            ${(t.plataformas||[]).map(p => `<span class="trend-tag hot">${p}</span>`).join("")}
-            ${(t.tags||[]).map(tag => `<span class="trend-tag">${tag}</span>`).join("")}
+            ${(t.plataformas||[]).map(p=>`<span class="trend-tag hot">${p}</span>`).join("")}
+            ${(t.tags||[]).map(tag=>`<span class="trend-tag">${tag}</span>`).join("")}
           </div>
-          <div class="trend-info">${t.descricao}</div>
-          <div class="trend-dica"><strong>💡 Como usar:</strong> ${t.como_usar}</div>
+          <div class="trend-info">${esc(t.descricao)}</div>
+          <div class="trend-dica"><strong>💡 Como usar:</strong> ${esc(t.como_usar)}</div>
           <div class="score-bar"><div class="score-bar-fill" style="width:${score}%;background:linear-gradient(90deg,${cor},#ffaa00)"></div></div>
           <div style="display:flex;gap:8px;margin-top:12px">
-            <button class="btn-usar-creative" data-ideia="${(t.titulo + ' — ' + t.descricao).replace(/"/g,'&quot;')}" style="flex:1;padding:9px;font-size:13px;font-weight:600;cursor:pointer;border:1px solid #ff6b0044;border-radius:8px;background:#ff6b0015;color:#ff6b00;">🎬 Gravar roteiro</button>
-            ${t.fonte ? `<a href="${t.fonte}" target="_blank" style="flex:1;padding:9px;font-size:13px;font-weight:600;border:1px solid #2a2a2a;border-radius:8px;background:transparent;color:#555;text-decoration:none;text-align:center;display:flex;align-items:center;justify-content:center;">🔗 Ver fonte</a>` : ""}
+            <button class="btn-usar-creative" data-ideia="${esc(t.titulo+" — "+t.descricao)}" style="flex:1;padding:9px;font-size:13px;font-weight:600;cursor:pointer;border:1px solid #ff6b0044;border-radius:8px;background:#ff6b0015;color:#ff6b00;">🎬 Gravar roteiro</button>
+            ${t.fonte?`<a href="${t.fonte}" target="_blank" style="flex:1;padding:9px;font-size:13px;font-weight:600;border:1px solid #2a2a2a;border-radius:8px;background:transparent;color:#555;text-decoration:none;text-align:center;display:flex;align-items:center;justify-content:center;">🔗 Ver fonte</a>`:""}
           </div>
         </div>`;
       });
-
       if (casos.length > 0) {
         html += `<div style="font-size:12px;color:#444;margin:24px 0 14px;text-transform:uppercase;letter-spacing:1px;">⚡ O que está acontecendo no seu nicho agora</div>`;
-        casos.forEach((c) => {
-          const tipoCor = c.tipo === "polêmica" ? "#ff4444" : c.tipo === "conquista" ? "#4ade80" : "#ff6b00";
-          const tipoIcon = c.tipo === "polêmica" ? "🔴" : c.tipo === "conquista" ? "🟢" : "⚡";
+        casos.forEach(c => {
+          const tipoCor = c.tipo==="polêmica"?"#ff4444":c.tipo==="conquista"?"#4ade80":"#ff6b00";
+          const tipoIcon = c.tipo==="polêmica"?"🔴":c.tipo==="conquista"?"🟢":"⚡";
           html += `<div class="trend-card" style="border-left-color:${tipoCor}">
-            <div class="trend-top">
-              <div>
-                <div class="trend-num" style="color:${tipoCor}">${tipoIcon} ${(c.tipo||"caso").toUpperCase()}</div>
-                <div class="trend-title">${c.nome}</div>
-                <div style="font-size:12px;color:#555;margin-top:2px">${c.tempo || ""}</div>
-              </div>
-            </div>
-            <div class="trend-info">${c.descricao}</div>
-            <div class="trend-dica"><strong>💡 Oportunidade de conteúdo:</strong> ${c.oportunidade}</div>
+            <div class="trend-top"><div>
+              <div class="trend-num" style="color:${tipoCor}">${tipoIcon} ${(c.tipo||"caso").toUpperCase()}</div>
+              <div class="trend-title">${esc(c.nome)}</div>
+              <div style="font-size:12px;color:#555;margin-top:2px">${c.tempo||""}</div>
+            </div></div>
+            <div class="trend-info">${esc(c.descricao)}</div>
+            <div class="trend-dica"><strong>💡 Oportunidade de conteúdo:</strong> ${esc(c.oportunidade)}</div>
             <div style="display:flex;gap:8px;margin-top:12px">
-              <button class="btn-usar-creative" data-ideia="${(c.nome + ' — ' + c.descricao).replace(/"/g,'&quot;')}" style="flex:1;padding:9px;font-size:13px;font-weight:600;cursor:pointer;border:1px solid #ff6b0044;border-radius:8px;background:#ff6b0015;color:#ff6b00;">🎬 Gravar roteiro</button>
-              ${c.fonte ? `<a href="${c.fonte}" target="_blank" style="flex:1;padding:9px;font-size:13px;font-weight:600;border:1px solid #2a2a2a;border-radius:8px;background:transparent;color:#555;text-decoration:none;text-align:center;display:flex;align-items:center;justify-content:center;">🔗 Ver fonte</a>` : ""}
+              <button class="btn-usar-creative" data-ideia="${esc(c.nome+" — "+c.descricao)}" style="flex:1;padding:9px;font-size:13px;font-weight:600;cursor:pointer;border:1px solid #ff6b0044;border-radius:8px;background:#ff6b0015;color:#ff6b00;">🎬 Gravar roteiro</button>
+              ${c.fonte?`<a href="${c.fonte}" target="_blank" style="flex:1;padding:9px;font-size:13px;font-weight:600;border:1px solid #2a2a2a;border-radius:8px;background:transparent;color:#555;text-decoration:none;text-align:center;display:flex;align-items:center;justify-content:center;">🔗 Ver fonte</a>`:""}
             </div>
           </div>`;
         });
       }
-
       result.innerHTML = html;
       result.style.display = "block";
-
-      // Eventos delegados — sem aspas no onclick
       result.querySelectorAll(".btn-usar-creative").forEach(btn => {
         btn.addEventListener("click", () => usarNoCreative(btn.dataset.ideia));
       });
@@ -618,9 +588,7 @@
     function usarNoCreative(ideia) {
       document.getElementById("ideia").value = ideia;
       trocarPagina("creative");
-      setTimeout(() => {
-        document.getElementById("ideia").scrollIntoView({ behavior: "smooth", block: "center" });
-      }, 100);
+      setTimeout(() => document.getElementById("ideia").scrollIntoView({ behavior:"smooth", block:"center" }), 100);
     }
 
     function renderFollowup(followup) {
@@ -629,16 +597,16 @@
       let html = `<div style="font-size:12px;color:#444;margin-bottom:14px;text-transform:uppercase;letter-spacing:1px;">💬 Sequência completa — Padrão Aventus</div>`;
       followup.forEach(item => {
         const cor = cores[item.tipo] || "#ff6b00";
-        const icone = item.tipo === "ligacao" ? "📞" : item.tipo === "automacao" ? "🤖" : "💬";
+        const icone = item.tipo==="ligacao"?"📞":item.tipo==="automacao"?"🤖":"💬";
         html += `<div class="follow-step">
           <div class="follow-step-header">
             <span class="follow-time-badge" style="background:${cor}22;color:${cor};border:1px solid ${cor}44">${item.tempo}</span>
-            <span class="follow-action">${icone} ${item.acao}</span>
+            <span class="follow-action">${icone} ${esc(item.acao)}</span>
           </div>`;
         if (item.mensagem) {
-          html += `<div class="follow-body"><div class="follow-msg">${item.mensagem}</div>${item.dica ? `<div class="follow-tip">💡 ${item.dica}</div>` : ""}</div>`;
+          html += `<div class="follow-body"><div class="follow-msg">${esc(item.mensagem)}</div>${item.dica?`<div class="follow-tip">💡 ${esc(item.dica)}</div>`:""}</div>`;
         } else if (item.dica) {
-          html += `<div class="follow-action-only">💡 ${item.dica}</div>`;
+          html += `<div class="follow-action-only">💡 ${esc(item.dica)}</div>`;
         }
         html += `</div>`;
       });
@@ -655,16 +623,11 @@
         html += `<div class="slide-card">
           <div class="slide-header">
             <div class="slide-num">${i+1}</div>
-            <div class="slide-title">${s.titulo}</div>
-            <div class="slide-subtitle">${s.subtitulo || ""}</div>
+            <div class="slide-title">${esc(s.titulo)}</div>
+            <div class="slide-subtitle">${esc(s.subtitulo||"")}</div>
           </div>
-          <div class="slide-body">`;
-        if (isPreco) {
-          html += `<div class="slide-price">${s.conteudo}</div><div class="slide-price-label">Investimento</div>`;
-        } else {
-          html += `<div class="slide-content">${s.conteudo}</div>`;
-        }
-        html += `</div></div>`;
+          <div class="slide-body">${isPreco?`<div class="slide-price">${esc(s.conteudo)}</div><div class="slide-price-label">Investimento</div>`:`<div class="slide-content">${esc(s.conteudo)}</div>`}</div>
+        </div>`;
       });
       html += `<button class="copy-btn" onclick="copiarProposta()">Copiar proposta completa</button>`;
       result.innerHTML = html; result.style.display = "block";
@@ -675,7 +638,7 @@
       if (!window._roteiro) return;
       const steps = window._roteiroSteps || STEPS_VIRAL;
       const labels = { ideia:"IDEIA/TEMA", gancho:"GANCHO/ABERTURA", tipo_gancho:"TIPO DE GANCHO", desenvolvimento:"DESENVOLVIMENTO", climax:"CLÍMAX/DIFERENCIAL", fechamento:"FECHAMENTO/CTA" };
-      const txt = steps.map(s => `${labels[s.key]||s.label.toUpperCase()}\n${window._roteiro[s.key]}`).join("\n\n");
+      const txt = steps.map(s => `${labels[s.key]||s.label}\n${window._roteiro[s.key]}`).join("\n\n");
       navigator.clipboard.writeText(txt).then(() => {
         const btns = document.querySelectorAll("#resultCreative .copy-btn");
         btns[0].textContent = "✓ Copiado!"; btns[0].style.color="#ff6b00";
@@ -685,7 +648,7 @@
 
     function copiarLegenda() {
       if (!window._roteiro) return;
-      const txt = (window._roteiro.legenda || "") + "\n\n" + (window._roteiro.hashtags || "");
+      const txt = (window._roteiro.legenda||"") + "\n\n" + (window._roteiro.hashtags||"");
       navigator.clipboard.writeText(txt).then(() => {
         const btns = document.querySelectorAll("#resultCreative .copy-btn");
         btns[1].textContent = "✓ Copiado!"; btns[1].style.color="#ff6b00";
@@ -695,7 +658,7 @@
 
     function copiarFollowup() {
       if (!window._followup) return;
-      const txt = window._followup.map(i => `${i.tempo} — ${i.acao}${i.mensagem ? '\n' + i.mensagem : ''}`).join("\n\n");
+      const txt = window._followup.map(i => `${i.tempo} — ${i.acao}${i.mensagem?"\n"+i.mensagem:""}`).join("\n\n");
       navigator.clipboard.writeText(txt).then(() => {
         const btn = document.querySelector("#resultFollow .copy-btn");
         btn.textContent = "✓ Copiado!"; btn.style.color="#ff6b00";
@@ -705,7 +668,7 @@
 
     function copiarProposta() {
       if (!window._proposta) return;
-      const txt = window._proposta.map((s, i) => `SLIDE ${i+1} — ${s.titulo}\n${s.conteudo}`).join("\n\n");
+      const txt = window._proposta.map((s,i) => `SLIDE ${i+1} — ${s.titulo}\n${s.conteudo}`).join("\n\n");
       navigator.clipboard.writeText(txt).then(() => {
         const btn = document.querySelector("#resultProposal .copy-btn");
         btn.textContent = "✓ Copiado!"; btn.style.color="#ff6b00";
