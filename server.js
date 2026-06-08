@@ -7,13 +7,6 @@ app.use(cors());
 app.use(express.json());
 app.use(express.static("public"));
 
-const SONNET = "claude-haiku-4-5-20251001";   // tudo no Haiku para economizar
-const HAIKU  = "claude-haiku-4-5-20251001";
-
-const USUARIOS = {
-  "admaventus": "aventus2.0",
-};
-
 // Bloqueia IPs e bots conhecidos
 const IP_BLOQUEADOS = ["164.92.244.132", "45.148.10.120", "35.192.144.4"];
 const UA_BLOQUEADOS = ["l9scan", "leakix", "CMS-Checker", "zgrab", "masscan", "nmap", "sqlmap"];
@@ -35,6 +28,14 @@ app.use((req, res, next) => {
   if (token !== API_SECRET) return res.status(403).json({ error: "Acesso negado" });
   next();
 });
+
+const MODELO = "claude-haiku-4-5-20251001";
+
+const USUARIOS = {
+  "admaventus": "aventus2.0",
+};
+
+async function api(prompt, webSearch = false, maxTokens = 2000) {
   const headers = {
     "Content-Type": "application/json",
     "x-api-key": process.env.ANTHROPIC_API_KEY,
@@ -42,7 +43,7 @@ app.use((req, res, next) => {
   };
   if (webSearch) headers["anthropic-beta"] = "web-search-2025-03-05";
 
-  const body = { model: modelo, max_tokens: maxTokens, messages: [{ role: "user", content: prompt }] };
+  const body = { model: MODELO, max_tokens: maxTokens, messages: [{ role: "user", content: prompt }] };
   if (webSearch) body.tools = [{ type: "web_search_20250305", name: "web_search" }];
 
   const r = await fetch("https://api.anthropic.com/v1/messages", {
@@ -74,18 +75,16 @@ app.post("/login", (req, res) => {
   USUARIOS[u] && USUARIOS[u] === s ? res.json({ ok: true }) : res.status(401).json({ ok: false });
 });
 
-// CREATIVE — Haiku com estrutura diferente por tipo
 app.post("/gerar-roteiro", async (req, res) => {
   const { ideia, tom, duracao, nicho } = req.body;
   if (!ideia) return res.status(400).json({ error: "Ideia obrigatória" });
 
   const isAnuncio = nicho === "anuncio";
-
   const duracaoGuia = duracao === "30 segundos"
-    ? "Vídeo de 30s: cada campo máximo 2 frases curtas. Roteiro total falado em 30 segundos."
+    ? "Vídeo de 30s: cada campo máximo 2 frases curtas."
     : duracao === "60 segundos"
-    ? "Vídeo de 60s: cada campo máximo 3-4 frases. Roteiro total falado em 60 segundos."
-    : "Vídeo de 90s: cada campo máximo 5-6 frases. Roteiro total falado em 90 segundos.";
+    ? "Vídeo de 60s: cada campo máximo 3-4 frases."
+    : "Vídeo de 90s: cada campo máximo 5-6 frases.";
 
   const prompt = isAnuncio
     ? `Pesquise dados reais sobre: "${ideia}". Crie roteiro de ANÚNCIO. Tom: ${tom}. ${duracaoGuia}
@@ -98,33 +97,29 @@ JSON puro sem texto extra:
 {"ideia":"mensagem central com dado real pesquisado","gancho":"frase exata de abertura 0-3s impactante","tipo_gancho":"nome do gancho + por que foi escolhido","desenvolvimento":"corpo do vídeo direto ao ponto","climax":"insight ou virada principal","fechamento":"conclusão forte + CTA","legenda":"legenda humana max 70 palavras terminando com pergunta","hashtags":"#tag1 #tag2 #tag3 #tag4 #tag5 #tag6 #tag7 #tag8"}`;
 
   try {
-    res.json(parseJSON(await api(prompt, HAIKU, true, 2000)));
+    res.json(parseJSON(await api(prompt, true, 2000)));
   } catch(e) {
     console.error("Roteiro:", e.message);
     res.status(500).json({ error: e.message });
   }
 });
 
-// TREND — duas buscas separadas e curtas
 app.post("/buscar-trends", async (req, res) => {
   const { nicho } = req.body;
   if (!nicho) return res.status(400).json({ error: "Nicho obrigatório" });
 
   const hoje = new Date().toLocaleDateString('pt-BR');
-
-  try {
-    // Busca 1: trends (sem web search, modelo mais barato)
-    const promptTrends = `Nicho: "${nicho}". Liste 3 trends viralizando agora no Instagram/TikTok. JSON puro:
+  const promptTrends = `Nicho: "${nicho}". Liste 3 trends viralizando agora no Instagram/TikTok. JSON puro:
 {"trends":[{"titulo":"...","score":80,"plataformas":["Reels","TikTok"],"tags":["tag1","tag2"],"descricao":"por que viraliza em 30 palavras","como_usar":"como usar em 20 palavras","fonte":null}]}`;
 
-    // Busca 2: polêmicas (com web search focado)
-    const promptCasos = `Hoje é ${hoje}. Busque na internet: polêmicas, escândalos, brigas, cancelamentos dos ÚLTIMOS 5 DIAS no nicho de "${nicho}" no Brasil. Inclua influenciadores, empresários, marcas. Seja direto. Se não houver polêmica, busque novidades e conquistas recentes. JSON puro:
+  const promptCasos = `Hoje é ${hoje}. Busque na internet: polêmicas, escândalos, brigas, cancelamentos dos ÚLTIMOS 5 DIAS no nicho de "${nicho}" no Brasil. Inclua influenciadores, empresários, marcas. Seja direto. Se não houver polêmica, busque novidades e conquistas recentes. JSON puro:
 {"casos":[{"nome":"nome real","tipo":"polêmica","tempo":"há X dias","descricao":"o que aconteceu em 30 palavras","oportunidade":"como criar conteúdo em 20 palavras","fonte":"url real ou null"}]}
 4 casos reais e recentes.`;
 
+  try {
     const [textTrends, textCasos] = await Promise.all([
-      api(promptTrends, HAIKU, false, 800),
-      api(promptCasos, SONNET, true, 1000),
+      api(promptTrends, false, 800),
+      api(promptCasos, true, 1000),
     ]);
 
     let trends = [], casos = [];
@@ -139,12 +134,12 @@ app.post("/buscar-trends", async (req, res) => {
   }
 });
 
-// FOLLOW — Haiku (mensagens simples)
 app.post("/gerar-followup", async (req, res) => {
   const { nicho, publico } = req.body;
   if (!nicho) return res.status(400).json({ error: "Nicho obrigatório" });
+  const contexto = publico ? `Produto/serviço: "${nicho}". Público-alvo: "${publico}"` : `Nicho: "${nicho}"`;
 
-  const prompt = `Sequência follow-up Padrão Aventus. Vendedor vende: "${nicho}" para: "${publico||"leads"}".
+  const prompt = `Sequência follow-up Padrão Aventus. Vendedor vende: ${contexto}.
 Use "fulano" como placeholder. Mensagens do vendedor para o lead.
 13 etapas obrigatórias:
 1.Imediato-boas-vindas+dica vídeo 2.Até 20min-ligar 3.Não ligou-avisar 4.Não atendeu-apresentação+diferencial 5.+24h-disponibilidade 6.+7h-ligar→oi 7.+24h-ligar→ 8.+7h-apagar contato 9.+24h-PERDIDOS post Instagram 10.+2dias-insistência criativa 11.+2dias-conteúdo 12.+2dias-conteúdo 13.+2dias-reunião
@@ -152,14 +147,13 @@ JSON puro:
 {"followup":[{"tempo":"Imediato","tipo":"mensagem","acao":"Boas-vindas","mensagem":"texto","dica":"dica"}]}`;
 
   try {
-    res.json(parseJSON(await api(prompt, HAIKU, false, 2500)));
+    res.json(parseJSON(await api(prompt, false, 2500)));
   } catch(e) {
     console.error("Follow:", e.message);
     res.status(500).json({ error: e.message });
   }
 });
 
-// PROPOSAL — Sonnet (qualidade máxima)
 app.post("/gerar-proposta", async (req, res) => {
   const { diferencial, problema, ciclo, solucao, credenciais, endereco, indicadores, metodo, icp, preco_caro, preco_final } = req.body;
 
@@ -171,7 +165,7 @@ JSON puro:
 {"slides":[{"titulo":"...","subtitulo":"...","tipo":"normal","conteudo":"..."}]}`;
 
   try {
-    res.json(parseJSON(await api(prompt, SONNET, false, 3500)));
+    res.json(parseJSON(await api(prompt, false, 3500)));
   } catch(e) {
     console.error("Proposta:", e.message);
     res.status(500).json({ error: e.message });
