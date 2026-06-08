@@ -7,7 +7,7 @@
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     body { background: #0a0a0a; color: #fff; font-family: system-ui, sans-serif; min-height: 100vh; padding: 2rem 1.5rem; }
-    .lock-screen { position:fixed; inset:0; background:#0a0a0a; display:flex; flex-direction:column; align-items:center; justify-content:center; z-index:9999; }
+    .lock-screen { position:fixed; inset:0; background:#0a0a0a; display:flex; align-items:center; justify-content:center; z-index:9999; }
     .lock-box { background:#111; border:1px solid #1f1f1f; border-radius:20px; padding:2.5rem 2rem; width:100%; max-width:380px; text-align:center; }
     .lock-logo { font-size:22px; font-weight:700; margin-bottom:4px; }
     .lock-sub { font-size:13px; color:#555; margin-bottom:28px; }
@@ -18,8 +18,8 @@
     .lock-btn { width:100%; margin-top:6px; padding:12px; font-size:15px; font-weight:600; cursor:pointer; border:none; border-radius:10px; background:linear-gradient(135deg,#ff6b00,#ff8c00); color:#fff; }
     .lock-btn:disabled { background:#2a2a2a; color:#555; cursor:not-allowed; }
     .lock-error { color:#ff4444; font-size:13px; margin-top:10px; display:none; }
-    .hub-nav { display:flex; gap:10px; margin-bottom:32px; }
-    .hub-btn { flex:1; padding:12px; font-size:14px; font-weight:600; cursor:pointer; border:1px solid #222; border-radius:12px; background:#111; color:#555; transition:all 0.2s; text-align:center; }
+    .hub-nav { display:flex; gap:8px; margin-bottom:32px; flex-wrap:wrap; }
+    .hub-btn { flex:1; min-width:100px; padding:10px 8px; font-size:13px; font-weight:600; cursor:pointer; border:1px solid #222; border-radius:12px; background:#111; color:#555; transition:all 0.2s; text-align:center; }
     .hub-btn.active { background:#ff6b0015; border-color:#ff6b00; color:#ff6b00; }
     .hub-btn:hover:not(.active) { border-color:#333; color:#aaa; }
     .page { display:none; }
@@ -79,6 +79,17 @@
     .trend-dica strong { color:#ff8c00; }
     .score-bar { height:4px; background:#1a1a1a; border-radius:2px; margin-top:12px; overflow:hidden; }
     .score-bar-fill { height:100%; border-radius:2px; }
+    /* FOLLOW */
+    .follow-step { border:1px solid #1f1f1f; border-radius:12px; margin-bottom:12px; overflow:hidden; }
+    .follow-step-header { display:flex; align-items:center; gap:12px; padding:12px 16px; background:#111; }
+    .follow-time-badge { font-size:11px; font-weight:700; padding:3px 10px; border-radius:20px; background:#ff6b0022; color:#ff6b00; border:1px solid #ff6b0033; white-space:nowrap; }
+    .follow-action { font-size:13px; font-weight:600; color:#aaa; }
+    .follow-type { font-size:11px; color:#444; margin-left:auto; }
+    .follow-body { padding:12px 16px; background:#0d0d0d; }
+    .follow-msg { font-size:15px; color:#e8e8e8; line-height:1.7; white-space:pre-line; }
+    .follow-tip { font-size:12px; color:#555; margin-top:8px; font-style:italic; border-top:1px solid #1a1a1a; padding-top:8px; }
+    .follow-action-only { font-size:14px; color:#ff8c00; padding:10px 16px; background:#0d0d0d; font-style:italic; }
+    .follow-section-title { font-size:11px; color:#444; text-transform:uppercase; letter-spacing:1px; margin:20px 0 10px; }
   </style>
 </head>
 <body>
@@ -101,10 +112,12 @@
   </div>
 
   <div class="hub-nav">
-    <div class="hub-btn active" id="nav-creative" onclick="trocarPagina('creative')">🎬 Aventus Creative_</div>
-    <div class="hub-btn" id="nav-trend" onclick="trocarPagina('trend')">🔥 Aventus Trend_</div>
+    <div class="hub-btn active" id="nav-creative" onclick="trocarPagina('creative')">🎬 Creative_</div>
+    <div class="hub-btn" id="nav-trend" onclick="trocarPagina('trend')">🔥 Trend_</div>
+    <div class="hub-btn" id="nav-follow" onclick="trocarPagina('follow')">💬 Follow_</div>
   </div>
 
+  <!-- CREATIVE -->
   <div class="page active" id="page-creative">
     <div class="badge"><div class="dot"></div> <span id="badgeText">Instagram Reels</span></div>
     <h1>Aventus <span class="accent">Creative_</span></h1>
@@ -145,6 +158,7 @@
     <div class="result" id="resultCreative"></div>
   </div>
 
+  <!-- TREND -->
   <div class="page" id="page-trend">
     <div class="badge"><div class="dot"></div> Trends em tempo real</div>
     <h1>Aventus <span class="accent">Trend_</span></h1>
@@ -162,6 +176,24 @@
     <div class="result" id="resultTrend"></div>
   </div>
 
+  <!-- FOLLOW -->
+  <div class="page" id="page-follow">
+    <div class="badge"><div class="dot"></div> Padrão Aventus de Follow-up</div>
+    <h1>Aventus <span class="accent">Follow_</span></h1>
+    <p class="sub">Digite seu nicho e receba toda a sequência de follow-up personalizada para converter seus leads.</p>
+    <div class="card">
+      <label>Seu nicho</label>
+      <input type="text" id="nichoFollow" placeholder="Ex: marketing digital, estética, construção civil..." onkeydown="if(event.key==='Enter')gerarFollowup()" />
+      <button class="btn btn-full" id="btnFollow" onclick="gerarFollowup()">💬 Gerar sequência de follow-up</button>
+      <p class="error" id="errorFollow" style="display:none"></p>
+      <div id="loadingFollow" style="display:none">
+        <p class="load-msg" id="loadmsgFollow">Analisando o nicho...</p>
+        <div class="load-bar"><div class="load-inner"></div></div>
+      </div>
+    </div>
+    <div class="result" id="resultFollow"></div>
+  </div>
+
   <script>
     const CORES = ["#ff6b00","#ff7a00","#ff8c00","#e65c00","#cc5200"];
     const TIPOS = ["Negativo","Contraintuitivo","Curiosidade","Polêmica","Pergunta: Você sabia que...","Autoridade","Storytelling","Identificação","Frases de Impacto","Urgência","Visual"];
@@ -175,6 +207,7 @@
     ];
     const msgsCreative = ["Pesquisando sobre o tema...","Analisando tendências...","Estruturando o roteiro...","Escolhendo o melhor gancho..."];
     const msgsTrend = ["Vasculhando a internet...","Analisando vídeos virais...","Calculando potencial de viralização...","Selecionando as 3 melhores trends..."];
+    const msgsFollow = ["Analisando o nicho...","Montando a sequência...","Personalizando as mensagens...","Finalizando o follow-up..."];
 
     function trocarPagina(p) {
       document.querySelectorAll('.page').forEach(el => el.classList.remove('active'));
@@ -274,6 +307,34 @@
       }
     }
 
+    async function gerarFollowup() {
+      const nicho = document.getElementById("nichoFollow").value.trim();
+      if (!nicho) return;
+      const btn = document.getElementById("btnFollow");
+      const err = document.getElementById("errorFollow");
+      const loading = document.getElementById("loadingFollow");
+      const result = document.getElementById("resultFollow");
+      btn.disabled = true; btn.textContent = "Gerando...";
+      err.style.display = "none"; loading.style.display = "block"; result.style.display = "none";
+      let mi = 0;
+      const ticker = setInterval(() => { mi=(mi+1)%msgsFollow.length; document.getElementById("loadmsgFollow").textContent=msgsFollow[mi]; }, 1800);
+      try {
+        const res = await fetch("/gerar-followup", {
+          method: "POST", headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ nicho })
+        });
+        const data = await res.json();
+        if (data.error) throw new Error(data.error);
+        renderFollowup(data.followup);
+      } catch(e) {
+        err.textContent = "Erro ao gerar follow-up. Tente novamente.";
+        err.style.display = "block";
+      } finally {
+        clearInterval(ticker); loading.style.display = "none";
+        btn.disabled = false; btn.textContent = "💬 Gerar sequência de follow-up";
+      }
+    }
+
     function renderRoteiro(data) {
       const result = document.getElementById("resultCreative");
       let html = `<div class="time-header"><div class="time-icon">⏱</div><div><div style="font-size:13px;font-weight:600;color:#ccc">Estrutura de tempo do Reel</div><div style="font-size:11px;color:#444">Gancho → Desenvolvimento → Clímax → Fechamento + CTA</div></div></div>`;
@@ -299,7 +360,6 @@
         }
         html += `</div>`;
       });
-
       if (data.legenda) {
         html += `<div class="step-card" style="border-left:3px solid #9b59b6;">
           <div class="step-head">
@@ -311,33 +371,10 @@
           ${data.hashtags ? `<div style="margin-top:12px;padding-top:10px;border-top:1px solid #1a1a1a;font-size:13px;color:#666;line-height:1.8;">${data.hashtags}</div>` : ""}
         </div>`;
       }
-
       html += `<button class="copy-btn" onclick="copiarRoteiro()">Copiar roteiro completo</button>`;
       html += `<button class="copy-btn" onclick="copiarLegenda()">Copiar legenda + hashtags</button>`;
-      result.innerHTML = html;
-      result.style.display = "block";
+      result.innerHTML = html; result.style.display = "block";
       window._roteiro = data;
-    }
-
-    function copiarRoteiro() {
-      if (!window._roteiro) return;
-      const labels = { ideia:"IDEIA", gancho:"GANCHO", tipo_gancho:"TIPO DE GANCHO", desenvolvimento:"DESENVOLVIMENTO", climax:"CLÍMAX", fechamento:"FECHAMENTO + CTA" };
-      const txt = STEPS.map(s => `${labels[s.key]}\n${window._roteiro[s.key]}`).join("\n\n");
-      navigator.clipboard.writeText(txt).then(() => {
-        const btns = document.querySelectorAll(".copy-btn");
-        btns[0].textContent = "✓ Copiado!"; btns[0].style.color="#ff6b00"; btns[0].style.borderColor="#ff6b00";
-        setTimeout(() => { btns[0].textContent="Copiar roteiro completo"; btns[0].style.color=""; btns[0].style.borderColor=""; }, 2500);
-      });
-    }
-
-    function copiarLegenda() {
-      if (!window._roteiro) return;
-      const txt = (window._roteiro.legenda || "") + "\n\n" + (window._roteiro.hashtags || "");
-      navigator.clipboard.writeText(txt).then(() => {
-        const btns = document.querySelectorAll(".copy-btn");
-        btns[1].textContent = "✓ Copiado!"; btns[1].style.color="#ff6b00"; btns[1].style.borderColor="#ff6b00";
-        setTimeout(() => { btns[1].textContent="Copiar legenda + hashtags"; btns[1].style.color=""; btns[1].style.borderColor=""; }, 2500);
-      });
     }
 
     function renderTrends(trends) {
@@ -348,10 +385,7 @@
         const cor = score >= 80 ? "#ff4500" : score >= 60 ? "#ff6b00" : "#ff8c00";
         html += `<div class="trend-card" style="border-left-color:${cor}">
           <div class="trend-top">
-            <div>
-              <div class="trend-num">Trend #${i+1}</div>
-              <div class="trend-title">${t.titulo}</div>
-            </div>
+            <div><div class="trend-num">Trend #${i+1}</div><div class="trend-title">${t.titulo}</div></div>
             <div class="score-circle" style="border-color:${cor}">
               <div class="score-num" style="color:${cor}">${score}</div>
               <div class="score-label">score</div>
@@ -366,8 +400,67 @@
           <div class="score-bar"><div class="score-bar-fill" style="width:${score}%;background:linear-gradient(90deg,${cor},#ffaa00)"></div></div>
         </div>`;
       });
-      result.innerHTML = html;
-      result.style.display = "block";
+      result.innerHTML = html; result.style.display = "block";
+    }
+
+    function renderFollowup(followup) {
+      const result = document.getElementById("resultFollow");
+      const cores = { ligacao:"#3498db", mensagem:"#ff6b00", automacao:"#9b59b6" };
+      let html = `<div style="font-size:12px;color:#444;margin-bottom:14px;text-transform:uppercase;letter-spacing:1px;">💬 Sequência completa — Padrão Aventus</div>`;
+
+      followup.forEach((item, i) => {
+        const cor = cores[item.tipo] || "#ff6b00";
+        const icone = item.tipo === "ligacao" ? "📞" : item.tipo === "automacao" ? "🤖" : "💬";
+        html += `<div class="follow-step">
+          <div class="follow-step-header">
+            <span class="follow-time-badge" style="background:${cor}22;color:${cor};border-color:${cor}44">${item.tempo}</span>
+            <span class="follow-action">${icone} ${item.acao}</span>
+          </div>`;
+        if (item.mensagem) {
+          html += `<div class="follow-body">
+            <div class="follow-msg">${item.mensagem}</div>
+            ${item.dica ? `<div class="follow-tip">💡 ${item.dica}</div>` : ""}
+          </div>`;
+        } else if (item.dica) {
+          html += `<div class="follow-action-only">💡 ${item.dica}</div>`;
+        }
+        html += `</div>`;
+      });
+
+      html += `<button class="copy-btn" onclick="copiarFollowup()">Copiar sequência completa</button>`;
+      result.innerHTML = html; result.style.display = "block";
+      window._followup = followup;
+    }
+
+    function copiarRoteiro() {
+      if (!window._roteiro) return;
+      const labels = { ideia:"IDEIA", gancho:"GANCHO", tipo_gancho:"TIPO DE GANCHO", desenvolvimento:"DESENVOLVIMENTO", climax:"CLÍMAX", fechamento:"FECHAMENTO + CTA" };
+      const txt = STEPS.map(s => `${labels[s.key]}\n${window._roteiro[s.key]}`).join("\n\n");
+      navigator.clipboard.writeText(txt).then(() => {
+        const btns = document.querySelectorAll("#resultCreative .copy-btn");
+        btns[0].textContent = "✓ Copiado!"; btns[0].style.color="#ff6b00";
+        setTimeout(() => { btns[0].textContent="Copiar roteiro completo"; btns[0].style.color=""; }, 2500);
+      });
+    }
+
+    function copiarLegenda() {
+      if (!window._roteiro) return;
+      const txt = (window._roteiro.legenda || "") + "\n\n" + (window._roteiro.hashtags || "");
+      navigator.clipboard.writeText(txt).then(() => {
+        const btns = document.querySelectorAll("#resultCreative .copy-btn");
+        btns[1].textContent = "✓ Copiado!"; btns[1].style.color="#ff6b00";
+        setTimeout(() => { btns[1].textContent="Copiar legenda + hashtags"; btns[1].style.color=""; }, 2500);
+      });
+    }
+
+    function copiarFollowup() {
+      if (!window._followup) return;
+      const txt = window._followup.map(i => `${i.tempo} — ${i.acao}${i.mensagem ? '\n' + i.mensagem : ''}`).join("\n\n");
+      navigator.clipboard.writeText(txt).then(() => {
+        const btn = document.querySelector("#resultFollow .copy-btn");
+        btn.textContent = "✓ Copiado!"; btn.style.color="#ff6b00";
+        setTimeout(() => { btn.textContent="Copiar sequência completa"; btn.style.color=""; }, 2500);
+      });
     }
   </script>
 </body>
