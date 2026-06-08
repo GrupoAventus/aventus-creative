@@ -65,9 +65,39 @@ app.post("/buscar-trends", async (req, res) => {
   const { nicho } = req.body;
   if (!nicho) return res.status(400).json({ error: "Nicho obrigatório" });
 
-  const prompt = `Especialista em trends virais. Pesquise as 3 trends mais quentes para o nicho: "${nicho}".
+  const prompt = `Especialista em trends virais e monitoramento de influenciadores.
+
+Pesquise na internet AGORA sobre o nicho: "${nicho}"
+
+Faça DUAS buscas:
+1. Trends e formatos de conteúdo viralizando agora nesse nicho
+2. Últimas notícias, polêmicas, conquistas e casos recentes dos principais influenciadores e empresários desse nicho (últimos dias)
+
 Responda APENAS JSON puro, campos CURTOS (max 60 palavras cada):
-{"trends":[{"titulo":"título curto","score":85,"plataformas":["Reels","TikTok"],"tags":["tag1","tag2"],"descricao":"por que está viralizando","como_usar":"como aplicar no nicho"}]}`;
+{
+  "trends": [
+    {
+      "titulo": "título curto da trend",
+      "score": 85,
+      "plataformas": ["Reels", "TikTok"],
+      "tags": ["tag1", "tag2"],
+      "descricao": "por que está viralizando agora",
+      "como_usar": "como aplicar no nicho"
+    }
+  ],
+  "casos": [
+    {
+      "nome": "Nome do influenciador/empresário",
+      "tipo": "polêmica",
+      "tempo": "há 2 dias",
+      "descricao": "o que aconteceu de forma objetiva",
+      "oportunidade": "como você pode criar conteúdo usando esse caso no seu nicho"
+    }
+  ]
+}
+
+Tipos possíveis para casos: "polêmica", "conquista", "novidade"
+Retorne pelo menos 3 trends e 3 casos reais e recentes.`;
 
   try {
     const response = await fetch("https://api.anthropic.com/v1/messages", {
