@@ -502,6 +502,10 @@
       }
     }
 
+    function esc(str) {
+      return (str || "").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+    }
+
     function renderRoteiro(data) {
       const result = document.getElementById("resultCreative");
       let html = `<div class="time-header"><div class="time-icon">${isAnuncio ? "📣" : "⏱"}</div><div><div style="font-size:13px;font-weight:600;color:#ccc">${isAnuncio ? "Estrutura do Criativo para Anúncio" : "Estrutura de tempo do Reel"}</div><div style="font-size:11px;color:#444">${isAnuncio ? "Dor → Diferencial → CTA Justificado" : "Gancho → Desenvolvimento → Clímax → Fechamento + CTA"}</div></div></div>`;
@@ -523,7 +527,7 @@
             ${exp ? `<p class="gancho-exp">${exp}</p>` : ""}
             <p class="gancho-tip">Combine Visual + Textual + Sonoro para máxima retenção nos primeiros 3 segundos.</p>`;
         } else {
-          html += `<p class="step-text">${data[s.key]}</p>`;
+          html += `<p class="step-text">${esc(data[s.key])}</p>`;
         }
         html += `</div>`;
       });
@@ -534,8 +538,8 @@
             <span class="step-label">Legenda do Post</span>
             <span class="step-desc">Pronta para copiar</span>
           </div>
-          <p class="step-text" style="white-space:pre-line">${data.legenda}</p>
-          ${data.hashtags ? `<div style="margin-top:12px;padding-top:10px;border-top:1px solid #1a1a1a;font-size:13px;color:#666;line-height:1.8;">${data.hashtags}</div>` : ""}
+          <p class="step-text" style="white-space:pre-line">${esc(data.legenda)}</p>
+          ${data.hashtags ? `<div style="margin-top:12px;padding-top:10px;border-top:1px solid #1a1a1a;font-size:13px;color:#666;line-height:1.8;">${esc(data.hashtags)}</div>` : ""}
         </div>`;
       }
       html += `<button class="copy-btn" onclick="copiarRoteiro()">Copiar roteiro completo</button>`;
@@ -662,10 +666,9 @@
 
     function copiarRoteiro() {
       if (!window._roteiro) return;
-      const isAnuncio = document.getElementById("nicho").value === "anuncio";
-      const steps = isAnuncio ? STEPS_ANUNCIO : STEPS_VIRAL;
-      const labels = { ideia:"IDEIA/TEMA", gancho:"ABERTURA/GANCHO", tipo_gancho:"TIPO DE GANCHO", desenvolvimento:"DESENVOLVIMENTO", climax:isAnuncio?"DIFERENCIAL":"CLÍMAX", fechamento:isAnuncio?"CTA JUSTIFICADO":"FECHAMENTO + CTA" };
-      const txt = steps.map(s => `${labels[s.key]}\n${window._roteiro[s.key]}`).join("\n\n");
+      const steps = window._roteiroSteps || STEPS_VIRAL;
+      const labels = { ideia:"IDEIA/TEMA", gancho:"GANCHO/ABERTURA", tipo_gancho:"TIPO DE GANCHO", desenvolvimento:"DESENVOLVIMENTO", climax:"CLÍMAX/DIFERENCIAL", fechamento:"FECHAMENTO/CTA" };
+      const txt = steps.map(s => `${labels[s.key]||s.label.toUpperCase()}\n${window._roteiro[s.key]}`).join("\n\n");
       navigator.clipboard.writeText(txt).then(() => {
         const btns = document.querySelectorAll("#resultCreative .copy-btn");
         btns[0].textContent = "✓ Copiado!"; btns[0].style.color="#ff6b00";
