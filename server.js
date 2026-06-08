@@ -62,16 +62,22 @@ app.post("/gerar-roteiro", async (req, res) => {
   if (!ideia) return res.status(400).json({ error: "Ideia obrigatória" });
 
   const isAnuncio = nicho === "anuncio";
-  const durSeg = duracao === "30 segundos" ? "30s" : duracao === "60 segundos" ? "60s" : "90s";
+
+  const duracaoGuia = duracao === "30 segundos"
+    ? "Vídeo de 30s: cada campo máximo 2 frases curtas. Roteiro total falado em 30 segundos."
+    : duracao === "60 segundos"
+    ? "Vídeo de 60s: cada campo máximo 3-4 frases. Roteiro total falado em 60 segundos."
+    : "Vídeo de 90s: cada campo máximo 5-6 frases. Roteiro total falado em 90 segundos.";
 
   const prompt = isAnuncio
-    ? `Pesquise UM dado real sobre: "${ideia}". Use esse dado para criar roteiro de anúncio ${durSeg}. Tom: ${tom}.
-JSON puro, CADA CAMPO MÁXIMO 20 PALAVRAS:
-{"ideia":"tema","gancho":"abertura atacando dor","tipo_gancho":"tipo + motivo","desenvolvimento":"dor ou crítica","climax":"diferencial","fechamento":"CTA justificado","legenda":"max 50 palavras com pergunta final","hashtags":"#t1 #t2 #t3 #t4 #t5 #t6 #t7 #t8"}`
-    : `Pesquise UM dado real sobre: "${ideia}". Use esse dado para criar roteiro viral ${durSeg}. Tom: ${tom}.
+    ? `Pesquise dados reais sobre: "${ideia}". Crie roteiro de ANÚNCIO. Tom: ${tom}. ${duracaoGuia}
+Estrutura: 1)Dor/inimigo comum 2)Diferencial 3)CTA justificado.
+JSON puro sem texto extra:
+{"ideia":"tema central","gancho":"frase 0-3s atacando dor diretamente","tipo_gancho":"nome do tipo + por que funciona","desenvolvimento":"aprofunda a dor ou critica o mercado","climax":"seu diferencial único","fechamento":"CTA com justificativa clara","legenda":"legenda humana max 70 palavras terminando com pergunta","hashtags":"#tag1 #tag2 #tag3 #tag4 #tag5 #tag6 #tag7 #tag8"}`
+    : `Pesquise dados reais sobre: "${ideia}". Crie roteiro VIRAL. Tom: ${tom}. ${duracaoGuia}
 Ganchos: Negativo,Contraintuitivo,Curiosidade,Polêmica,Você sabia que,Autoridade,Storytelling,Identificação,Frases de Impacto,Urgência,Visual.
-JSON puro, CADA CAMPO MÁXIMO 20 PALAVRAS:
-{"ideia":"tema com dado real","gancho":"frase exata 0-3s","tipo_gancho":"tipo + motivo","desenvolvimento":"corpo do vídeo","climax":"insight principal","fechamento":"conclusão+CTA","legenda":"max 50 palavras com pergunta final","hashtags":"#t1 #t2 #t3 #t4 #t5 #t6 #t7 #t8"}`;
+JSON puro sem texto extra:
+{"ideia":"mensagem central com dado real pesquisado","gancho":"frase exata de abertura 0-3s impactante","tipo_gancho":"nome do gancho + por que foi escolhido","desenvolvimento":"corpo do vídeo direto ao ponto","climax":"insight ou virada principal","fechamento":"conclusão forte + CTA","legenda":"legenda humana max 70 palavras terminando com pergunta","hashtags":"#tag1 #tag2 #tag3 #tag4 #tag5 #tag6 #tag7 #tag8"}`;
 
   try {
     res.json(parseJSON(await api(prompt, HAIKU, true, 2000)));
