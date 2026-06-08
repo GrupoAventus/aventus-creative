@@ -47,20 +47,38 @@ app.post("/login", (req, res) => {
   USUARIOS[u] && USUARIOS[u] === s ? res.json({ ok: true }) : res.status(401).json({ ok: false });
 });
 
-// CREATIVE — Sonnet (qualidade máxima)
+// CREATIVE — Haiku com estrutura diferente por tipo
 app.post("/gerar-roteiro", async (req, res) => {
   const { ideia, tom, duracao, nicho } = req.body;
   if (!ideia) return res.status(400).json({ error: "Ideia obrigatória" });
 
-  const prompt = `Roteiro viral para Instagram Reels. Nicho: ${nicho||"Negócios"}. Tom: ${tom}. Duração: ${duracao}.
-Tema: "${ideia}"
-Pesquise dados reais sobre o tema na web.
-Ganchos disponíveis: Negativo, Contraintuitivo, Curiosidade, Polêmica, Você sabia que, Autoridade, Storytelling, Identificação, Frases de Impacto, Urgência, Visual.
-JSON puro apenas:
-{"ideia":"mensagem central com dado real","gancho":"frase exata abertura 0-3s","tipo_gancho":"nome + por que foi escolhido em 2 frases","desenvolvimento":"corpo 4-30s sem enrolação","climax":"insight 30s-1min","fechamento":"conclusão+CTA","legenda":"legenda humana max 100 palavras terminando com pergunta","hashtags":"10 hashtags relevantes"}`;
+  const isAnuncio = nicho === "anuncio";
+
+  const duracaoInstrucao = duracao === "30 segundos" 
+    ? "Roteiro MUITO CURTO: máximo 3-4 frases por seção. Total deve caber em 30 segundos falados."
+    : duracao === "60 segundos"
+    ? "Roteiro MÉDIO: 4-6 frases por seção. Total deve caber em 60 segundos falados."
+    : "Roteiro LONGO: 6-8 frases por seção. Total deve caber em 90 segundos falados.";
+
+  const prompt = isAnuncio
+    ? `Crie um roteiro de CRIATIVO PARA ANÚNCIO (${duracao}) sobre: "${ideia}". Tom: ${tom}.
+${duracaoInstrucao}
+Estrutura obrigatória:
+1. DOR/INIMIGO COMUM: começar atacando uma dor real do público OU criticar algo do mercado/concorrente que frustra o cliente
+2. DIFERENCIAL: explicar por que você é diferente e o que faz de único
+3. CTA JUSTIFICADO: chamada para ação com justificativa clara (ex: "clica em saiba mais porque...")
+Pesquise dados reais sobre o tema.
+JSON puro:
+{"ideia":"tema central do anúncio","gancho":"frase de abertura impactante que ataca a dor 0-3s","tipo_gancho":"tipo do gancho + por que foi escolhido em 2 frases","desenvolvimento":"desenvolvimento da dor/crítica ao mercado","climax":"apresentação do diferencial — por que você é diferente","fechamento":"CTA justificado — diga exatamente o que clicar e POR QUE","legenda":"legenda para o post max 80 palavras terminando com pergunta","hashtags":"8 hashtags relevantes"}`
+    : `Crie um roteiro de VÍDEO VIRAL (${duracao}) sobre: "${ideia}". Tom: ${tom}.
+${duracaoInstrucao}
+Pesquise dados reais sobre o tema.
+Ganchos: Negativo, Contraintuitivo, Curiosidade, Polêmica, Você sabia que, Autoridade, Storytelling, Identificação, Frases de Impacto, Urgência, Visual.
+JSON puro:
+{"ideia":"mensagem central com dado real","gancho":"frase exata abertura 0-3s","tipo_gancho":"nome + por que foi escolhido em 2 frases","desenvolvimento":"corpo sem enrolação respeitando duração ${duracao}","climax":"insight principal","fechamento":"conclusão+CTA","legenda":"legenda humana max 80 palavras terminando com pergunta","hashtags":"8 hashtags"}`;
 
   try {
-    res.json(parseJSON(await api(prompt, SONNET, true, 1200)));
+    res.json(parseJSON(await api(prompt, HAIKU, true, 1200)));
   } catch(e) {
     console.error("Roteiro:", e.message);
     res.status(500).json({ error: e.message });
