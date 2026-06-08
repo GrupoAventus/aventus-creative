@@ -502,11 +502,16 @@
       }
     }
 
+    const CORES = ["#ff6b00","#ff7a00","#ff8c00","#e65c00","#cc5200"];
+    const TIPOS = ["Negativo","Contraintuitivo","Curiosidade","Polêmica","Pergunta: Você sabia que...","Autoridade","Storytelling","Identificação","Frases de Impacto","Urgência","Visual"];
+
     function esc(str) {
       return (str || "").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
     }
 
     function renderRoteiro(data) {
+      const isAnuncio = document.getElementById("nicho").value === "anuncio";
+      const steps = isAnuncio ? STEPS_ANUNCIO : STEPS_VIRAL;
       const result = document.getElementById("resultCreative");
       let html = `<div class="time-header"><div class="time-icon">${isAnuncio ? "📣" : "⏱"}</div><div><div style="font-size:13px;font-weight:600;color:#ccc">${isAnuncio ? "Estrutura do Criativo para Anúncio" : "Estrutura de tempo do Reel"}</div><div style="font-size:11px;color:#444">${isAnuncio ? "Dor → Diferencial → CTA Justificado" : "Gancho → Desenvolvimento → Clímax → Fechamento + CTA"}</div></div></div>`;
       steps.forEach((s, i) => {
@@ -524,7 +529,7 @@
           const exp = partes.slice(1).join(" ") || "";
           html += `<div class="gancho-badge">Tipo: ${tipo}</div>
             <div class="tipos-grid">${TIPOS.map((g,gi) => `<div class="tipo-item${tipo.toLowerCase().includes(g.toLowerCase().split(":")[0].trim())?' ativo':''}">${gi+1}. ${g}</div>`).join("")}</div>
-            ${exp ? `<p class="gancho-exp">${exp}</p>` : ""}
+            ${exp ? `<p class="gancho-exp">${esc(exp)}</p>` : ""}
             <p class="gancho-tip">Combine Visual + Textual + Sonoro para máxima retenção nos primeiros 3 segundos.</p>`;
         } else {
           html += `<p class="step-text">${esc(data[s.key])}</p>`;
@@ -544,8 +549,10 @@
       }
       html += `<button class="copy-btn" onclick="copiarRoteiro()">Copiar roteiro completo</button>`;
       html += `<button class="copy-btn" onclick="copiarLegenda()">Copiar legenda + hashtags</button>`;
-      result.innerHTML = html; result.style.display = "block";
+      result.innerHTML = html;
+      result.style.display = "block";
       window._roteiro = data;
+      window._roteiroSteps = steps;
     }
 
     function renderTrends(data) {
