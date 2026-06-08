@@ -105,11 +105,11 @@ Busque:
 
 Responda APENAS JSON puro, cada campo max 50 palavras:
 {
-  "trends": [{"titulo":"...","score":85,"plataformas":["Reels","TikTok"],"tags":["tag1"],"descricao":"...","como_usar":"..."}],
-  "casos": [{"nome":"...","tipo":"polêmica","tempo":"há X dias","descricao":"...","oportunidade":"..."}]
+  "trends": [{"titulo":"...","score":85,"plataformas":["Reels","TikTok"],"tags":["tag1"],"descricao":"...","como_usar":"...","fonte":"URL da fonte ou null"}],
+  "casos": [{"nome":"...","tipo":"polêmica","tempo":"há X dias","descricao":"...","oportunidade":"...","fonte":"URL da notícia ou post original ou null"}]
 }
 Tipos: "polêmica", "conquista", "novidade"
-Retorne 3 trends e 4 casos dos ÚLTIMOS 5 DIAS. Mínimo 2 polêmicas.`;
+Retorne 3 trends e 4 casos dos ÚLTIMOS 5 DIAS. Mínimo 2 polêmicas. Inclua a URL real da fonte quando disponível.`;
 
   try {
     const text = await chamarAPI(prompt, true, 2000);
