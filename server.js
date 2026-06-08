@@ -11,12 +11,30 @@ const SONNET = "claude-haiku-4-5-20251001";   // tudo no Haiku para economizar
 const HAIKU  = "claude-haiku-4-5-20251001";
 
 const USUARIOS = {
-  "squad01":"aventus","squad02":"aventus","brunoguedes":"aventus",
-  "heloisa":"aventus","moldandoinox":"aventus","fernando":"aventus",
-  "romulo":"aventus","darlene":"aventus","joel":"aventus","construart":"aventus",
+  "admaventus": "aventus2.0",
 };
 
-async function api(prompt, modelo, webSearch = false, maxTokens = 1000) {
+// Bloqueia IPs e bots conhecidos
+const IP_BLOQUEADOS = ["164.92.244.132", "45.148.10.120", "35.192.144.4"];
+const UA_BLOQUEADOS = ["l9scan", "leakix", "CMS-Checker", "zgrab", "masscan", "nmap", "sqlmap"];
+
+app.use((req, res, next) => {
+  const ip = req.headers["x-forwarded-for"] || req.socket.remoteAddress || "";
+  const ua = req.headers["user-agent"] || "";
+  if (IP_BLOQUEADOS.some(b => ip.includes(b))) return res.status(403).end();
+  if (UA_BLOQUEADOS.some(b => ua.toLowerCase().includes(b.toLowerCase()))) return res.status(403).end();
+  next();
+});
+
+// Middleware de proteção com chave secreta
+const API_SECRET = process.env.API_SECRET || "aventus-secret-2025";
+app.use((req, res, next) => {
+  if (req.path === "/" || req.method === "GET") return next();
+  if (req.path === "/login") return next();
+  const token = req.headers["x-api-secret"];
+  if (token !== API_SECRET) return res.status(403).json({ error: "Acesso negado" });
+  next();
+});
   const headers = {
     "Content-Type": "application/json",
     "x-api-key": process.env.ANTHROPIC_API_KEY,
