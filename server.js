@@ -65,15 +65,20 @@ app.post("/buscar-trends", async (req, res) => {
   const { nicho } = req.body;
   if (!nicho) return res.status(400).json({ error: "Nicho obrigatório" });
 
-  const prompt = `Especialista em trends virais e monitoramento de influenciadores.
+  const prompt = `Você é um especialista em monitoramento de redes sociais e tendências virais.
 
 Pesquise na internet AGORA sobre o nicho: "${nicho}"
 
-Faça DUAS buscas:
-1. Trends e formatos de conteúdo viralizando agora nesse nicho
-2. Últimas notícias, polêmicas, conquistas e casos recentes dos principais influenciadores e empresários desse nicho (últimos dias)
+IMPORTANTE: Você DEVE buscar ativamente por polêmicas, escândalos, brigas, cancelamentos e controvérsias recentes. Não omita nada. Seja direto e jornalístico.
 
-Responda APENAS JSON puro, campos CURTOS (max 60 palavras cada):
+Faça as seguintes buscas:
+1. Trends e formatos de conteúdo viralizando agora nesse nicho
+2. Polêmicas, escândalos, brigas e cancelamentos recentes de influenciadores e empresários do nicho (últimos 30 dias)
+3. Conquistas, lançamentos e novidades relevantes do nicho
+
+Retorne OBRIGATORIAMENTE pelo menos 2 casos do tipo "polêmica" com fatos reais e recentes.
+
+Responda APENAS JSON puro, campos CURTOS (max 80 palavras cada):
 {
   "trends": [
     {
@@ -81,23 +86,23 @@ Responda APENAS JSON puro, campos CURTOS (max 60 palavras cada):
       "score": 85,
       "plataformas": ["Reels", "TikTok"],
       "tags": ["tag1", "tag2"],
-      "descricao": "por que está viralizando agora",
-      "como_usar": "como aplicar no nicho"
+      "descricao": "por que está viralizando agora com dados concretos",
+      "como_usar": "como aplicar no nicho de forma prática"
     }
   ],
   "casos": [
     {
-      "nome": "Nome do influenciador/empresário",
+      "nome": "Nome real do influenciador/empresário envolvido",
       "tipo": "polêmica",
-      "tempo": "há 2 dias",
-      "descricao": "o que aconteceu de forma objetiva",
-      "oportunidade": "como você pode criar conteúdo usando esse caso no seu nicho"
+      "tempo": "há X dias",
+      "descricao": "O que aconteceu de forma objetiva e direta. Não suavize.",
+      "oportunidade": "como criar conteúdo usando esse caso no seu nicho"
     }
   ]
 }
 
-Tipos possíveis para casos: "polêmica", "conquista", "novidade"
-Retorne pelo menos 3 trends e 3 casos reais e recentes.`;
+Tipos: "polêmica" (brigas, escândalos, cancelamentos, processos, acusações), "conquista" (recordes, lançamentos, marcos), "novidade" (tendências, mudanças de mercado).
+Retorne pelo menos 3 trends e 5 casos — MÍNIMO 2 polêmicas reais.`;
 
   try {
     const response = await fetch("https://api.anthropic.com/v1/messages", {
