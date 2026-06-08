@@ -140,13 +140,13 @@
       </div>
 
       <div class="hub-card" id="nav-follow" onclick="trocarPagina('follow')">
-        <div class="hub-card-icon">💬</div>
+        <div class="hub-card-icon">💬 <span style="font-size:10px;background:#ff6b0022;color:#ff6b00;border:1px solid #ff6b0044;border-radius:10px;padding:2px 6px;vertical-align:middle">🔒 Premium</span></div>
         <div class="hub-card-name">Follow_</div>
         <div class="hub-card-desc">Gera toda a sequência de follow-up do Padrão Aventus personalizada para o seu nicho</div>
       </div>
 
       <div class="hub-card" id="nav-proposal" onclick="trocarPagina('proposal')">
-        <div class="hub-card-icon">📊</div>
+        <div class="hub-card-icon">📊 <span style="font-size:10px;background:#ff6b0022;color:#ff6b00;border:1px solid #ff6b0044;border-radius:10px;padding:2px 6px;vertical-align:middle">🔒 Premium</span></div>
         <div class="hub-card-name">Proposal_</div>
         <div class="hub-card-desc">Monta sua proposta comercial completa em slides pelo Método Aventus Digital</div>
       </div>
@@ -305,11 +305,32 @@
     const msgsFollow = ["Analisando o nicho...","Montando a sequência...","Personalizando mensagens...","Finalizando o follow-up..."];
     const msgsProposal = ["Analisando seu negócio...","Pesquisando o mercado...","Montando os slides...","Finalizando a proposta..."];
 
+    // Controle de acesso premium
+    const SENHA_PREMIUM = "acessofull";
+    let premiumLiberado = false;
+
     function trocarPagina(p) {
+      if ((p === "follow" || p === "proposal") && !premiumLiberado) {
+        pedirSenhaPremium(p);
+        return;
+      }
       document.querySelectorAll('.page').forEach(el => el.classList.remove('active'));
       document.querySelectorAll('.hub-card').forEach(el => el.classList.remove('active'));
       document.getElementById('page-' + p).classList.add('active');
       document.getElementById('nav-' + p).classList.add('active');
+    }
+
+    function pedirSenhaPremium(destino) {
+      const senha = prompt("🔐 Digite a senha para acessar essa ferramenta:");
+      if (senha === SENHA_PREMIUM) {
+        premiumLiberado = true;
+        document.querySelectorAll('.page').forEach(el => el.classList.remove('active'));
+        document.querySelectorAll('.hub-card').forEach(el => el.classList.remove('active'));
+        document.getElementById('page-' + destino).classList.add('active');
+        document.getElementById('nav-' + destino).classList.add('active');
+      } else if (senha !== null) {
+        alert("❌ Senha incorreta.");
+      }
     }
 
     function abrirClass() {
