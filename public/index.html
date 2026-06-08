@@ -542,7 +542,10 @@
           <div class="trend-info">${t.descricao}</div>
           <div class="trend-dica"><strong>💡 Como usar:</strong> ${t.como_usar}</div>
           <div class="score-bar"><div class="score-bar-fill" style="width:${score}%;background:linear-gradient(90deg,${cor},#ffaa00)"></div></div>
-          <button onclick="usarNoCreative('${ideia}')" style="margin-top:12px;width:100%;padding:9px;font-size:13px;font-weight:600;cursor:pointer;border:1px solid #ff6b0044;border-radius:8px;background:#ff6b0015;color:#ff6b00;transition:all 0.2s;" onmouseover="this.style.background='#ff6b0030'" onmouseout="this.style.background='#ff6b0015'">🎬 Gravar roteiro sobre isso</button>
+          <div style="display:flex;gap:8px;margin-top:12px">
+            <button onclick="usarNoCreative('${ideia}')" style="flex:1;padding:9px;font-size:13px;font-weight:600;cursor:pointer;border:1px solid #ff6b0044;border-radius:8px;background:#ff6b0015;color:#ff6b00;" onmouseover="this.style.background='#ff6b0030'" onmouseout="this.style.background='#ff6b0015'">🎬 Gravar roteiro</button>
+            ${t.fonte ? `<a href="${t.fonte}" target="_blank" style="flex:1;padding:9px;font-size:13px;font-weight:600;cursor:pointer;border:1px solid #2a2a2a;border-radius:8px;background:transparent;color:#555;text-decoration:none;text-align:center;display:flex;align-items:center;justify-content:center;gap:4px" onmouseover="this.style.borderColor='#555';this.style.color='#aaa'" onmouseout="this.style.borderColor='#2a2a2a';this.style.color='#555'">🔗 Ver fonte</a>` : ""}
+          </div>
         </div>`;
       });
 
@@ -562,7 +565,10 @@
             </div>
             <div class="trend-info">${c.descricao}</div>
             <div class="trend-dica"><strong>💡 Oportunidade de conteúdo:</strong> ${c.oportunidade}</div>
-            <button onclick="usarNoCreative('${ideia}')" style="margin-top:12px;width:100%;padding:9px;font-size:13px;font-weight:600;cursor:pointer;border:1px solid #ff6b0044;border-radius:8px;background:#ff6b0015;color:#ff6b00;transition:all 0.2s;" onmouseover="this.style.background='#ff6b0030'" onmouseout="this.style.background='#ff6b0015'">🎬 Gravar roteiro sobre isso</button>
+            <div style="display:flex;gap:8px;margin-top:12px">
+              <button onclick="usarNoCreative('${ideia}')" style="flex:1;padding:9px;font-size:13px;font-weight:600;cursor:pointer;border:1px solid #ff6b0044;border-radius:8px;background:#ff6b0015;color:#ff6b00;" onmouseover="this.style.background='#ff6b0030'" onmouseout="this.style.background='#ff6b0015'">🎬 Gravar roteiro</button>
+              ${c.fonte ? `<a href="${c.fonte}" target="_blank" style="flex:1;padding:9px;font-size:13px;font-weight:600;cursor:pointer;border:1px solid #2a2a2a;border-radius:8px;background:transparent;color:#555;text-decoration:none;text-align:center;display:flex;align-items:center;justify-content:center;gap:4px" onmouseover="this.style.borderColor='#555';this.style.color='#aaa'" onmouseout="this.style.borderColor='#2a2a2a';this.style.color='#555'">🔗 Ver fonte</a>` : ""}
+            </div>
           </div>`;
         });
       }
