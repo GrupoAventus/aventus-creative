@@ -529,6 +529,7 @@
       trends.forEach((t, i) => {
         const score = t.score || 0;
         const cor = score >= 80 ? "#ff4500" : score >= 60 ? "#ff6b00" : "#ff8c00";
+        const ideia = encodeURIComponent(`${t.titulo} — ${t.descricao}`);
         html += `<div class="trend-card" style="border-left-color:${cor}">
           <div class="trend-top">
             <div><div class="trend-num">Trend #${i+1}</div><div class="trend-title">${t.titulo}</div></div>
@@ -541,6 +542,7 @@
           <div class="trend-info">${t.descricao}</div>
           <div class="trend-dica"><strong>💡 Como usar:</strong> ${t.como_usar}</div>
           <div class="score-bar"><div class="score-bar-fill" style="width:${score}%;background:linear-gradient(90deg,${cor},#ffaa00)"></div></div>
+          <button onclick="usarNoCreative('${ideia}')" style="margin-top:12px;width:100%;padding:9px;font-size:13px;font-weight:600;cursor:pointer;border:1px solid #ff6b0044;border-radius:8px;background:#ff6b0015;color:#ff6b00;transition:all 0.2s;" onmouseover="this.style.background='#ff6b0030'" onmouseout="this.style.background='#ff6b0015'">🎬 Gravar roteiro sobre isso</button>
         </div>`;
       });
 
@@ -549,6 +551,7 @@
         casos.forEach((c, i) => {
           const tipoCor = c.tipo === "polêmica" ? "#ff4444" : c.tipo === "conquista" ? "#4ade80" : "#ff6b00";
           const tipoIcon = c.tipo === "polêmica" ? "🔴" : c.tipo === "conquista" ? "🟢" : "⚡";
+          const ideia = encodeURIComponent(`${c.nome} — ${c.descricao}`);
           html += `<div class="trend-card" style="border-left-color:${tipoCor}">
             <div class="trend-top">
               <div>
@@ -559,11 +562,21 @@
             </div>
             <div class="trend-info">${c.descricao}</div>
             <div class="trend-dica"><strong>💡 Oportunidade de conteúdo:</strong> ${c.oportunidade}</div>
+            <button onclick="usarNoCreative('${ideia}')" style="margin-top:12px;width:100%;padding:9px;font-size:13px;font-weight:600;cursor:pointer;border:1px solid #ff6b0044;border-radius:8px;background:#ff6b0015;color:#ff6b00;transition:all 0.2s;" onmouseover="this.style.background='#ff6b0030'" onmouseout="this.style.background='#ff6b0015'">🎬 Gravar roteiro sobre isso</button>
           </div>`;
         });
       }
 
       result.innerHTML = html; result.style.display = "block";
+    }
+
+    function usarNoCreative(ideiaEncoded) {
+      const ideia = decodeURIComponent(ideiaEncoded);
+      document.getElementById("ideia").value = ideia;
+      trocarPagina("creative");
+      document.querySelector(".hub-card#nav-creative").classList.add("active");
+      document.getElementById("ideia").focus();
+      document.getElementById("ideia").scrollIntoView({ behavior: "smooth", block: "center" });
     }
 
     function renderFollowup(followup) {
