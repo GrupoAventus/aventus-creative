@@ -322,6 +322,8 @@
       window.open('https://drive.google.com/drive/folders/1WxU6piNcUfZJ92UQedrUIDBH0ZjSLozS?usp=sharing', '_blank');
     }
 
+    const HEADERS = { "Content-Type": "application/json", "x-api-secret": "aventus-secret-2025" };
+
     async function fazerLogin() {
       const usuario = document.getElementById("usuarioInput").value.trim();
       const senha = document.getElementById("senhaInput").value;
@@ -371,7 +373,7 @@
       const ticker = setInterval(() => { mi=(mi+1)%msgsCreative.length; document.getElementById("loadmsgCreative").textContent=msgsCreative[mi]; }, 1800);
       try {
         const res = await fetch("/gerar-roteiro", {
-          method: "POST", headers: { "Content-Type": "application/json" },
+          method: "POST", headers: HEADERS,
           body: JSON.stringify({ ideia, tom, duracao, nicho })
         });
         const data = await res.json();
@@ -399,7 +401,7 @@
       const ticker = setInterval(() => { mi=(mi+1)%msgsTrend.length; document.getElementById("loadmsgTrend").textContent=msgsTrend[mi]; }, 1800);
       try {
         const res = await fetch("/buscar-trends", {
-          method: "POST", headers: { "Content-Type": "application/json" },
+          method: "POST", headers: HEADERS,
           body: JSON.stringify({ nicho })
         });
         const data = await res.json();
@@ -428,7 +430,7 @@
       const ticker = setInterval(() => { mi=(mi+1)%msgsFollow.length; document.getElementById("loadmsgFollow").textContent=msgsFollow[mi]; }, 1800);
       try {
         const res = await fetch("/gerar-followup", {
-          method: "POST", headers: { "Content-Type": "application/json" },
+          method: "POST", headers: HEADERS,
           body: JSON.stringify({ nicho, publico })
         });
         const data = await res.json();
@@ -468,7 +470,7 @@
       const ticker = setInterval(() => { mi=(mi+1)%msgsProposal.length; document.getElementById("loadmsgProposal").textContent=msgsProposal[mi]; }, 1800);
       try {
         const res = await fetch("/gerar-proposta", {
-          method: "POST", headers: { "Content-Type": "application/json" },
+          method: "POST", headers: HEADERS,
           body: JSON.stringify(campos)
         });
         const data = await res.json();
