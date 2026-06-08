@@ -18,10 +18,13 @@
     .lock-btn { width:100%; margin-top:6px; padding:12px; font-size:15px; font-weight:600; cursor:pointer; border:none; border-radius:10px; background:linear-gradient(135deg,#ff6b00,#ff8c00); color:#fff; }
     .lock-btn:disabled { background:#2a2a2a; color:#555; cursor:not-allowed; }
     .lock-error { color:#ff4444; font-size:13px; margin-top:10px; display:none; }
-    .hub-nav { display:flex; gap:8px; margin-bottom:32px; flex-wrap:wrap; }
-    .hub-btn { flex:1; min-width:80px; padding:10px 8px; font-size:12px; font-weight:600; cursor:pointer; border:1px solid #222; border-radius:12px; background:#111; color:#555; transition:all 0.2s; text-align:center; }
-    .hub-btn.active { background:#ff6b0015; border-color:#ff6b00; color:#ff6b00; }
-    .hub-btn:hover:not(.active) { border-color:#333; color:#aaa; }
+    .hub-card { background:#111; border:1px solid #1f1f1f; border-radius:14px; padding:16px; cursor:pointer; transition:all 0.2s; }
+    .hub-card:hover { border-color:#333; background:#161616; }
+    .hub-card.active { background:#ff6b0010; border-color:#ff6b00; }
+    .hub-card-icon { font-size:24px; margin-bottom:8px; }
+    .hub-card-name { font-size:15px; font-weight:700; color:#fff; margin-bottom:6px; }
+    .hub-card.active .hub-card-name { color:#ff6b00; }
+    .hub-card-desc { font-size:12px; color:#555; line-height:1.5; }
     .page { display:none; }
     .page.active { display:block; }
     .badge { display:inline-flex; align-items:center; gap:6px; background:#1a1a1a; border:1px solid #2a2a2a; border-radius:20px; padding:4px 12px; font-size:12px; color:#888; margin-bottom:24px; }
@@ -119,11 +122,43 @@
     </div>
   </div>
 
-  <div class="hub-nav">
-    <div class="hub-btn active" id="nav-creative" onclick="trocarPagina('creative')">🎬 Creative_</div>
-    <div class="hub-btn" id="nav-trend" onclick="trocarPagina('trend')">🔥 Trend_</div>
-    <div class="hub-btn" id="nav-follow" onclick="trocarPagina('follow')">💬 Follow_</div>
-    <div class="hub-btn" id="nav-proposal" onclick="trocarPagina('proposal')">📊 Proposal_</div>
+  <!-- HUB GRID -->
+  <div style="margin-bottom:32px">
+    <div style="font-size:11px;color:#444;text-transform:uppercase;letter-spacing:1px;margin-bottom:16px">Escolha uma ferramenta</div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px">
+
+      <div class="hub-card active" id="nav-creative" onclick="trocarPagina('creative')">
+        <div class="hub-card-icon">🎬</div>
+        <div class="hub-card-name">Creative_</div>
+        <div class="hub-card-desc">Gera roteiros virais para Reels com gancho, estrutura de tempo e legenda pronta</div>
+      </div>
+
+      <div class="hub-card" id="nav-trend" onclick="trocarPagina('trend')">
+        <div class="hub-card-icon">🔥</div>
+        <div class="hub-card-name">Trend_</div>
+        <div class="hub-card-desc">Vasculha a internet e encontra as 3 trends com maior potencial de viralização agora</div>
+      </div>
+
+      <div class="hub-card" id="nav-follow" onclick="trocarPagina('follow')">
+        <div class="hub-card-icon">💬</div>
+        <div class="hub-card-name">Follow_</div>
+        <div class="hub-card-desc">Gera toda a sequência de follow-up do Padrão Aventus personalizada para o seu nicho</div>
+      </div>
+
+      <div class="hub-card" id="nav-proposal" onclick="trocarPagina('proposal')">
+        <div class="hub-card-icon">📊</div>
+        <div class="hub-card-name">Proposal_</div>
+        <div class="hub-card-desc">Monta sua proposta comercial completa em slides pelo Método Aventus Digital</div>
+      </div>
+
+      <div class="hub-card" id="nav-class" onclick="abrirClass()">
+        <div class="hub-card-icon">🎓</div>
+        <div class="hub-card-name">Class_</div>
+        <div class="hub-card-desc">Acesse as aulas gravadas exclusivas da Aventus no Google Drive</div>
+        <div style="margin-top:10px;font-size:11px;color:#ff6b00;font-weight:600">Acessar aulas →</div>
+      </div>
+
+    </div>
   </div>
 
   <!-- CREATIVE -->
@@ -272,9 +307,15 @@
 
     function trocarPagina(p) {
       document.querySelectorAll('.page').forEach(el => el.classList.remove('active'));
-      document.querySelectorAll('.hub-btn').forEach(el => el.classList.remove('active'));
+      document.querySelectorAll('.hub-card').forEach(el => el.classList.remove('active'));
       document.getElementById('page-' + p).classList.add('active');
       document.getElementById('nav-' + p).classList.add('active');
+    }
+
+    function abrirClass() {
+      document.querySelectorAll('.hub-card').forEach(el => el.classList.remove('active'));
+      document.getElementById('nav-class').classList.add('active');
+      window.open('https://drive.google.com/drive/folders/1WxU6piNcUfZJ92UQedrUIDBH0ZjSLozS?usp=sharing', '_blank');
     }
 
     async function fazerLogin() {
