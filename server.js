@@ -185,5 +185,83 @@ Retorne APENAS JSON puro, sem markdown. Seja CONCISO, máximo 80 palavras por ca
   }
 });
 
+app.post("/gerar-followup", async (req, res) => {
+  const { nicho } = req.body;
+  if (!nicho) return res.status(400).json({ error: "Nicho obrigatório" });
+
+  const prompt = `Você é um especialista em vendas e follow-up baseado no Padrão Aventus.
+
+Gere uma sequência completa de follow-up para o nicho: "${nicho}"
+
+A sequência DEVE seguir exatamente essa estrutura:
+1. Imediato: mensagem de boas-vindas + dica de enviar vídeo de apresentação
+2. Em até 20min: ligar para o lead
+3. Se não ligou em 20min: mensagem avisando que vai ligar em breve
+4. Se não atendeu a ligação: mensagem se apresentando + diferencial do nicho
+5. +24h: mensagem perguntando disponibilidade para ligar
+6. +7h: nova tentativa de ligação → se não atender: manda "oi"
+7. +24h: nova tentativa de ligação → se não atender:
+8. +7h: mensagem "vou apagar seu contato — é falta de interesse ou correria?"
+9. +24h sem resposta: AUTOMAÇÃO DE PERDIDOS começa
+10. Automação imediata: mensagem convidando para seguir o perfil no Instagram
+11. +2 dias: mensagem criativa mostrando que a empresa é insistente (adapte ao nicho)
+12. +2 dias: mensagem com outro conteúdo/post do Instagram
+13. +2 dias: mais um conteúdo/post
+14. +2 dias: convite para reunião/conversa
+
+Personalize TODAS as mensagens para o nicho "${nicho}". Use "fulano" como placeholder do nome.
+
+Responda APENAS JSON puro, sem markdown:
+
+{
+  "followup": [
+    {
+      "tempo": "Imediato",
+      "tipo": "mensagem",
+      "acao": "Mensagem de boas-vindas",
+      "mensagem": "texto da mensagem aqui",
+      "dica": "dica opcional para quem está enviando"
+    },
+    {
+      "tempo": "Em até 20 minutos",
+      "tipo": "ligacao",
+      "acao": "Ligar para o lead",
+      "mensagem": null,
+      "dica": "dica sobre a ligação"
+    }
+  ]
+}`;
+
+  try {
+    const response = await fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "x-api-key": process.env.ANTHROPIC_API_KEY,
+        "anthropic-version": "2023-06-01",
+      },
+      body: JSON.stringify({
+        model: "claude-sonnet-4-5",
+        max_tokens: 3000,
+        messages: [{ role: "user", content: prompt }],
+      }),
+    });
+
+    const data = await response.json();
+    if (data.error) return res.status(500).json({ error: data.error.message });
+
+    const content = data.content || [];
+    const text = content.filter(i => i.type === "text").map(i => i.text).join("");
+    const start = text.indexOf("{");
+    const end = text.lastIndexOf("}");
+    if (start === -1 || end === -1) return res.status(500).json({ error: "Formato inválido" });
+    const parsed = JSON.parse(text.slice(start, end + 1));
+    res.json(parsed);
+  } catch (e) {
+    console.error("Erro followup:", e);
+    res.status(500).json({ error: "Erro ao gerar follow-up" });
+  }
+});
+
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Servidor rodando na porta ${PORT}`));
