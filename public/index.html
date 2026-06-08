@@ -182,8 +182,10 @@
     <h1>Aventus <span class="accent">Follow_</span></h1>
     <p class="sub">Digite seu nicho e receba toda a sequência de follow-up personalizada para converter seus leads.</p>
     <div class="card">
-      <label>Seu nicho</label>
-      <input type="text" id="nichoFollow" placeholder="Ex: marketing digital, estética, construção civil..." onkeydown="if(event.key==='Enter')gerarFollowup()" />
+      <label>O que você vende / oferece?</label>
+      <input type="text" id="nichoFollow" placeholder="Ex: aulas de inglês online, consultoria de marketing, reforma de imóveis..." />
+      <label style="margin-top:14px">Para quem você vende?</label>
+      <input type="text" id="publicoFollow" placeholder="Ex: adultos que querem aprender inglês, pequenas empresas, donos de casa..." onkeydown="if(event.key==='Enter')gerarFollowup()" />
       <button class="btn btn-full" id="btnFollow" onclick="gerarFollowup()">💬 Gerar sequência de follow-up</button>
       <p class="error" id="errorFollow" style="display:none"></p>
       <div id="loadingFollow" style="display:none">
@@ -293,7 +295,7 @@
       try {
         const res = await fetch("/buscar-trends", {
           method: "POST", headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ nicho })
+          body: JSON.stringify({ nicho, publico })
         });
         const data = await res.json();
         if (data.error) throw new Error(data.error);
@@ -309,6 +311,7 @@
 
     async function gerarFollowup() {
       const nicho = document.getElementById("nichoFollow").value.trim();
+      const publico = document.getElementById("publicoFollow").value.trim();
       if (!nicho) return;
       const btn = document.getElementById("btnFollow");
       const err = document.getElementById("errorFollow");
