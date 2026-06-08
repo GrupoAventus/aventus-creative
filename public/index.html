@@ -19,7 +19,7 @@
     .lock-btn:disabled { background:#2a2a2a; color:#555; cursor:not-allowed; }
     .lock-error { color:#ff4444; font-size:13px; margin-top:10px; display:none; }
     .hub-nav { display:flex; gap:8px; margin-bottom:32px; flex-wrap:wrap; }
-    .hub-btn { flex:1; min-width:100px; padding:10px 8px; font-size:13px; font-weight:600; cursor:pointer; border:1px solid #222; border-radius:12px; background:#111; color:#555; transition:all 0.2s; text-align:center; }
+    .hub-btn { flex:1; min-width:80px; padding:10px 8px; font-size:12px; font-weight:600; cursor:pointer; border:1px solid #222; border-radius:12px; background:#111; color:#555; transition:all 0.2s; text-align:center; }
     .hub-btn.active { background:#ff6b0015; border-color:#ff6b00; color:#ff6b00; }
     .hub-btn:hover:not(.active) { border-color:#333; color:#aaa; }
     .page { display:none; }
@@ -79,17 +79,25 @@
     .trend-dica strong { color:#ff8c00; }
     .score-bar { height:4px; background:#1a1a1a; border-radius:2px; margin-top:12px; overflow:hidden; }
     .score-bar-fill { height:100%; border-radius:2px; }
-    /* FOLLOW */
     .follow-step { border:1px solid #1f1f1f; border-radius:12px; margin-bottom:12px; overflow:hidden; }
     .follow-step-header { display:flex; align-items:center; gap:12px; padding:12px 16px; background:#111; }
-    .follow-time-badge { font-size:11px; font-weight:700; padding:3px 10px; border-radius:20px; background:#ff6b0022; color:#ff6b00; border:1px solid #ff6b0033; white-space:nowrap; }
+    .follow-time-badge { font-size:11px; font-weight:700; padding:3px 10px; border-radius:20px; white-space:nowrap; }
     .follow-action { font-size:13px; font-weight:600; color:#aaa; }
-    .follow-type { font-size:11px; color:#444; margin-left:auto; }
     .follow-body { padding:12px 16px; background:#0d0d0d; }
     .follow-msg { font-size:15px; color:#e8e8e8; line-height:1.7; white-space:pre-line; }
     .follow-tip { font-size:12px; color:#555; margin-top:8px; font-style:italic; border-top:1px solid #1a1a1a; padding-top:8px; }
     .follow-action-only { font-size:14px; color:#ff8c00; padding:10px 16px; background:#0d0d0d; font-style:italic; }
-    .follow-section-title { font-size:11px; color:#444; text-transform:uppercase; letter-spacing:1px; margin:20px 0 10px; }
+    /* PROPOSAL */
+    .slide-card { border:1px solid #1f1f1f; border-radius:14px; margin-bottom:14px; overflow:hidden; }
+    .slide-header { display:flex; align-items:center; gap:12px; padding:14px 18px; background:#111; border-bottom:1px solid #1a1a1a; }
+    .slide-num { width:32px; height:32px; border-radius:8px; background:#ff6b0022; color:#ff6b00; border:1px solid #ff6b0033; display:flex; align-items:center; justify-content:center; font-size:13px; font-weight:700; flex-shrink:0; }
+    .slide-title { font-size:14px; font-weight:700; color:#fff; }
+    .slide-subtitle { font-size:11px; color:#444; margin-left:auto; }
+    .slide-body { padding:16px 18px; background:#0d0d0d; }
+    .slide-content { font-size:15px; color:#e8e8e8; line-height:1.8; white-space:pre-line; }
+    .slide-tag { display:inline-flex; align-items:center; gap:4px; font-size:11px; padding:3px 10px; border-radius:20px; background:#ff6b0015; color:#ff6b00; border:1px solid #ff6b0033; margin-bottom:10px; }
+    .slide-price { font-size:32px; font-weight:800; color:#ff6b00; text-align:center; padding:20px; letter-spacing:-1px; }
+    .slide-price-label { font-size:12px; color:#555; text-align:center; margin-top:-10px; margin-bottom:10px; }
   </style>
 </head>
 <body>
@@ -115,6 +123,7 @@
     <div class="hub-btn active" id="nav-creative" onclick="trocarPagina('creative')">🎬 Creative_</div>
     <div class="hub-btn" id="nav-trend" onclick="trocarPagina('trend')">🔥 Trend_</div>
     <div class="hub-btn" id="nav-follow" onclick="trocarPagina('follow')">💬 Follow_</div>
+    <div class="hub-btn" id="nav-proposal" onclick="trocarPagina('proposal')">📊 Proposal_</div>
   </div>
 
   <!-- CREATIVE -->
@@ -183,9 +192,9 @@
     <p class="sub">Digite seu nicho e receba toda a sequência de follow-up personalizada para converter seus leads.</p>
     <div class="card">
       <label>O que você vende / oferece?</label>
-      <input type="text" id="nichoFollow" placeholder="Ex: aulas de inglês online, consultoria de marketing, reforma de imóveis..." />
+      <input type="text" id="nichoFollow" placeholder="Ex: aulas de inglês online, consultoria de marketing..." />
       <label style="margin-top:14px">Para quem você vende?</label>
-      <input type="text" id="publicoFollow" placeholder="Ex: adultos que querem aprender inglês, pequenas empresas, donos de casa..." onkeydown="if(event.key==='Enter')gerarFollowup()" />
+      <input type="text" id="publicoFollow" placeholder="Ex: adultos que querem aprender inglês, pequenas empresas..." onkeydown="if(event.key==='Enter')gerarFollowup()" />
       <button class="btn btn-full" id="btnFollow" onclick="gerarFollowup()">💬 Gerar sequência de follow-up</button>
       <p class="error" id="errorFollow" style="display:none"></p>
       <div id="loadingFollow" style="display:none">
@@ -194,6 +203,55 @@
       </div>
     </div>
     <div class="result" id="resultFollow"></div>
+  </div>
+
+  <!-- PROPOSAL -->
+  <div class="page" id="page-proposal">
+    <div class="badge"><div class="dot"></div> Método Aventus Digital</div>
+    <h1>Aventus <span class="accent">Proposal_</span></h1>
+    <p class="sub">Preencha os campos e a IA monta sua proposta comercial completa em slides.</p>
+    <div class="card">
+      <label>1. Seu principal diferencial</label>
+      <textarea id="p_diferencial" placeholder="O que te diferencia das outras empresas?" style="min-height:70px"></textarea>
+
+      <label style="margin-top:14px">2. Problema do mercado</label>
+      <textarea id="p_problema" placeholder="Qual dor seu cliente enfrenta no dia a dia?" style="min-height:70px"></textarea>
+
+      <label style="margin-top:14px">3. Ciclo vicioso</label>
+      <textarea id="p_ciclo" placeholder="Por que seu cliente não consegue resolver esse problema sozinho?" style="min-height:70px"></textarea>
+
+      <label style="margin-top:14px">4. Sua solução</label>
+      <textarea id="p_solucao" placeholder="Como você resolve esse problema de forma diferente?" style="min-height:70px"></textarea>
+
+      <label style="margin-top:14px">5. Suas credenciais</label>
+      <textarea id="p_credenciais" placeholder="Formação, anos de experiência, certificações..." style="min-height:70px"></textarea>
+
+      <label style="margin-top:14px">6. Endereço / onde encontrar</label>
+      <input type="text" id="p_endereco" placeholder="Cidade, estado, site, redes sociais..." />
+
+      <label style="margin-top:14px">7. Indicadores da empresa</label>
+      <textarea id="p_indicadores" placeholder="Ex: 500 alunos formados, R$2M gerados para clientes..." style="min-height:70px"></textarea>
+
+      <label style="margin-top:14px">8. Método e entregáveis</label>
+      <textarea id="p_metodo" placeholder="O que você entrega e como funciona seu método..." style="min-height:70px"></textarea>
+
+      <label style="margin-top:14px">9. Quem é seu cliente ideal (ICP)</label>
+      <textarea id="p_icp" placeholder="Profissão, idade, dores, sonhos, comportamento..." style="min-height:70px"></textarea>
+
+      <label style="margin-top:14px">10. Preço cheio (com todas as entregas)</label>
+      <input type="text" id="p_preco_caro" placeholder="Ex: R$ 12.000 — inclui mentoria, ferramentas, suporte..." />
+
+      <label style="margin-top:14px">11. Preço protagonista (valor real)</label>
+      <input type="text" id="p_preco_final" placeholder="Ex: R$ 4.997" />
+
+      <button class="btn btn-full" id="btnProposal" onclick="gerarProposta()">📊 Gerar proposta comercial</button>
+      <p class="error" id="errorProposal" style="display:none"></p>
+      <div id="loadingProposal" style="display:none">
+        <p class="load-msg" id="loadmsgProposal">Analisando seu negócio...</p>
+        <div class="load-bar"><div class="load-inner"></div></div>
+      </div>
+    </div>
+    <div class="result" id="resultProposal"></div>
   </div>
 
   <script>
@@ -208,8 +266,9 @@
       { key:"fechamento", label:"Fechamento + CTA (1–1:30min)", num:"5", desc:"Promessa + chamada para ação" },
     ];
     const msgsCreative = ["Pesquisando sobre o tema...","Analisando tendências...","Estruturando o roteiro...","Escolhendo o melhor gancho..."];
-    const msgsTrend = ["Vasculhando a internet...","Analisando vídeos virais...","Calculando potencial de viralização...","Selecionando as 3 melhores trends..."];
-    const msgsFollow = ["Analisando o nicho...","Montando a sequência...","Personalizando as mensagens...","Finalizando o follow-up..."];
+    const msgsTrend = ["Vasculhando a internet...","Analisando vídeos virais...","Calculando potencial...","Selecionando as 3 melhores..."];
+    const msgsFollow = ["Analisando o nicho...","Montando a sequência...","Personalizando mensagens...","Finalizando o follow-up..."];
+    const msgsProposal = ["Analisando seu negócio...","Pesquisando o mercado...","Montando os slides...","Finalizando a proposta..."];
 
     function trocarPagina(p) {
       document.querySelectorAll('.page').forEach(el => el.classList.remove('active'));
@@ -295,7 +354,7 @@
       try {
         const res = await fetch("/buscar-trends", {
           method: "POST", headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ nicho, publico })
+          body: JSON.stringify({ nicho })
         });
         const data = await res.json();
         if (data.error) throw new Error(data.error);
@@ -324,7 +383,7 @@
       try {
         const res = await fetch("/gerar-followup", {
           method: "POST", headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ nicho })
+          body: JSON.stringify({ nicho, publico })
         });
         const data = await res.json();
         if (data.error) throw new Error(data.error);
@@ -335,6 +394,46 @@
       } finally {
         clearInterval(ticker); loading.style.display = "none";
         btn.disabled = false; btn.textContent = "💬 Gerar sequência de follow-up";
+      }
+    }
+
+    async function gerarProposta() {
+      const campos = {
+        diferencial: document.getElementById("p_diferencial").value.trim(),
+        problema: document.getElementById("p_problema").value.trim(),
+        ciclo: document.getElementById("p_ciclo").value.trim(),
+        solucao: document.getElementById("p_solucao").value.trim(),
+        credenciais: document.getElementById("p_credenciais").value.trim(),
+        endereco: document.getElementById("p_endereco").value.trim(),
+        indicadores: document.getElementById("p_indicadores").value.trim(),
+        metodo: document.getElementById("p_metodo").value.trim(),
+        icp: document.getElementById("p_icp").value.trim(),
+        preco_caro: document.getElementById("p_preco_caro").value.trim(),
+        preco_final: document.getElementById("p_preco_final").value.trim(),
+      };
+      if (!campos.diferencial && !campos.problema) return;
+      const btn = document.getElementById("btnProposal");
+      const err = document.getElementById("errorProposal");
+      const loading = document.getElementById("loadingProposal");
+      const result = document.getElementById("resultProposal");
+      btn.disabled = true; btn.textContent = "Gerando...";
+      err.style.display = "none"; loading.style.display = "block"; result.style.display = "none";
+      let mi = 0;
+      const ticker = setInterval(() => { mi=(mi+1)%msgsProposal.length; document.getElementById("loadmsgProposal").textContent=msgsProposal[mi]; }, 1800);
+      try {
+        const res = await fetch("/gerar-proposta", {
+          method: "POST", headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(campos)
+        });
+        const data = await res.json();
+        if (data.error) throw new Error(data.error);
+        renderProposta(data.slides);
+      } catch(e) {
+        err.textContent = "Erro ao gerar proposta. Tente novamente.";
+        err.style.display = "block";
+      } finally {
+        clearInterval(ticker); loading.style.display = "none";
+        btn.disabled = false; btn.textContent = "📊 Gerar proposta comercial";
       }
     }
 
@@ -389,10 +488,7 @@
         html += `<div class="trend-card" style="border-left-color:${cor}">
           <div class="trend-top">
             <div><div class="trend-num">Trend #${i+1}</div><div class="trend-title">${t.titulo}</div></div>
-            <div class="score-circle" style="border-color:${cor}">
-              <div class="score-num" style="color:${cor}">${score}</div>
-              <div class="score-label">score</div>
-            </div>
+            <div class="score-circle" style="border-color:${cor}"><div class="score-num" style="color:${cor}">${score}</div><div class="score-label">score</div></div>
           </div>
           <div class="trend-tags">
             ${(t.plataformas||[]).map(p => `<span class="trend-tag hot">${p}</span>`).join("")}
@@ -410,29 +506,48 @@
       const result = document.getElementById("resultFollow");
       const cores = { ligacao:"#3498db", mensagem:"#ff6b00", automacao:"#9b59b6" };
       let html = `<div style="font-size:12px;color:#444;margin-bottom:14px;text-transform:uppercase;letter-spacing:1px;">💬 Sequência completa — Padrão Aventus</div>`;
-
-      followup.forEach((item, i) => {
+      followup.forEach(item => {
         const cor = cores[item.tipo] || "#ff6b00";
         const icone = item.tipo === "ligacao" ? "📞" : item.tipo === "automacao" ? "🤖" : "💬";
         html += `<div class="follow-step">
           <div class="follow-step-header">
-            <span class="follow-time-badge" style="background:${cor}22;color:${cor};border-color:${cor}44">${item.tempo}</span>
+            <span class="follow-time-badge" style="background:${cor}22;color:${cor};border:1px solid ${cor}44">${item.tempo}</span>
             <span class="follow-action">${icone} ${item.acao}</span>
           </div>`;
         if (item.mensagem) {
-          html += `<div class="follow-body">
-            <div class="follow-msg">${item.mensagem}</div>
-            ${item.dica ? `<div class="follow-tip">💡 ${item.dica}</div>` : ""}
-          </div>`;
+          html += `<div class="follow-body"><div class="follow-msg">${item.mensagem}</div>${item.dica ? `<div class="follow-tip">💡 ${item.dica}</div>` : ""}</div>`;
         } else if (item.dica) {
           html += `<div class="follow-action-only">💡 ${item.dica}</div>`;
         }
         html += `</div>`;
       });
-
       html += `<button class="copy-btn" onclick="copiarFollowup()">Copiar sequência completa</button>`;
       result.innerHTML = html; result.style.display = "block";
       window._followup = followup;
+    }
+
+    function renderProposta(slides) {
+      const result = document.getElementById("resultProposal");
+      let html = `<div style="font-size:12px;color:#444;margin-bottom:14px;text-transform:uppercase;letter-spacing:1px;">📊 Proposta comercial — Método Aventus Digital</div>`;
+      slides.forEach((s, i) => {
+        const isPreco = s.tipo === "preco_final";
+        html += `<div class="slide-card">
+          <div class="slide-header">
+            <div class="slide-num">${i+1}</div>
+            <div class="slide-title">${s.titulo}</div>
+            <div class="slide-subtitle">${s.subtitulo || ""}</div>
+          </div>
+          <div class="slide-body">`;
+        if (isPreco) {
+          html += `<div class="slide-price">${s.conteudo}</div><div class="slide-price-label">Investimento</div>`;
+        } else {
+          html += `<div class="slide-content">${s.conteudo}</div>`;
+        }
+        html += `</div></div>`;
+      });
+      html += `<button class="copy-btn" onclick="copiarProposta()">Copiar proposta completa</button>`;
+      result.innerHTML = html; result.style.display = "block";
+      window._proposta = slides;
     }
 
     function copiarRoteiro() {
@@ -463,6 +578,16 @@
         const btn = document.querySelector("#resultFollow .copy-btn");
         btn.textContent = "✓ Copiado!"; btn.style.color="#ff6b00";
         setTimeout(() => { btn.textContent="Copiar sequência completa"; btn.style.color=""; }, 2500);
+      });
+    }
+
+    function copiarProposta() {
+      if (!window._proposta) return;
+      const txt = window._proposta.map((s, i) => `SLIDE ${i+1} — ${s.titulo}\n${s.conteudo}`).join("\n\n");
+      navigator.clipboard.writeText(txt).then(() => {
+        const btn = document.querySelector("#resultProposal .copy-btn");
+        btn.textContent = "✓ Copiado!"; btn.style.color="#ff6b00";
+        setTimeout(() => { btn.textContent="Copiar proposta completa"; btn.style.color=""; }, 2500);
       });
     }
   </script>
