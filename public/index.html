@@ -171,14 +171,8 @@
       <textarea id="ideia" placeholder="Ex: Por que a maioria dos empreendedores quebra nos primeiros 2 anos..."></textarea>
       <div class="row">
         <select id="nicho" onchange="atualizarBadge()">
-          <option value="Negócios & Empreendedorismo">Negócios & Empreendedorismo</option>
-          <option value="Marketing Digital">Marketing Digital</option>
-          <option value="Finanças Pessoais">Finanças Pessoais</option>
-          <option value="Saúde & Bem-estar">Saúde & Bem-estar</option>
-          <option value="Fitness & Emagrecimento">Fitness & Emagrecimento</option>
-          <option value="Beleza & Skincare">Beleza & Skincare</option>
-          <option value="Moda & Estilo">Moda & Estilo</option>
-          <option value="Relacionamentos">Relacionamentos</option>
+          <option value="viral">Vídeo Viral</option>
+          <option value="anuncio">Criativo para Anúncio</option>
         </select>
         <select id="tom">
           <option value="direto e provocador">Direto e provocador</option>
@@ -290,9 +284,7 @@
   </div>
 
   <script>
-    const CORES = ["#ff6b00","#ff7a00","#ff8c00","#e65c00","#cc5200"];
-    const TIPOS = ["Negativo","Contraintuitivo","Curiosidade","Polêmica","Pergunta: Você sabia que...","Autoridade","Storytelling","Identificação","Frases de Impacto","Urgência","Visual"];
-    const STEPS = [
+    const STEPS_VIRAL = [
       { key:"ideia", label:"Ideia Central", num:"1", desc:"O que você quer comunicar" },
       { key:"gancho", label:"Gancho (0–3s)", num:"2", desc:"Para o scroll imediatamente" },
       { key:"tipo_gancho", label:"Tipo de Gancho", num:"★", desc:"Estratégia dos 3 primeiros segundos", special:true },
@@ -300,6 +292,15 @@
       { key:"climax", label:"Clímax (30s–1min)", num:"4", desc:"O insight. A virada. A lição." },
       { key:"fechamento", label:"Fechamento + CTA (1–1:30min)", num:"5", desc:"Promessa + chamada para ação" },
     ];
+    const STEPS_ANUNCIO = [
+      { key:"ideia", label:"Tema Central", num:"1", desc:"O que o anúncio comunica" },
+      { key:"gancho", label:"Abertura (0–3s)", num:"2", desc:"Ataca a dor imediatamente" },
+      { key:"tipo_gancho", label:"Tipo de Gancho", num:"★", desc:"Estratégia dos 3 primeiros segundos", special:true },
+      { key:"desenvolvimento", label:"Dor / Inimigo Comum", num:"3", desc:"Aprofunda a dor ou critica o mercado" },
+      { key:"climax", label:"Seu Diferencial", num:"4", desc:"Por que você é diferente" },
+      { key:"fechamento", label:"CTA Justificado", num:"5", desc:"O que fazer e POR QUE fazer" },
+    ];
+    const STEPS = STEPS_VIRAL; // default
     const msgsCreative = ["Pesquisando sobre o tema...","Analisando tendências...","Estruturando o roteiro...","Escolhendo o melhor gancho..."];
     const msgsTrend = ["Vasculhando a internet...","Analisando vídeos virais...","Calculando potencial...","Selecionando as 3 melhores..."];
     const msgsFollow = ["Analisando o nicho...","Montando a sequência...","Personalizando mensagens...","Finalizando o follow-up..."];
@@ -368,7 +369,9 @@
     }
 
     function atualizarBadge() {
-      document.getElementById("badgeText").textContent = "Instagram Reels · " + document.getElementById("nicho").value;
+      const nicho = document.getElementById("nicho").value;
+      const label = nicho === "anuncio" ? "Criativo para Anúncio" : "Vídeo Viral";
+      document.getElementById("badgeText").textContent = label;
     }
 
     async function gerarRoteiro() {
@@ -501,8 +504,8 @@
 
     function renderRoteiro(data) {
       const result = document.getElementById("resultCreative");
-      let html = `<div class="time-header"><div class="time-icon">⏱</div><div><div style="font-size:13px;font-weight:600;color:#ccc">Estrutura de tempo do Reel</div><div style="font-size:11px;color:#444">Gancho → Desenvolvimento → Clímax → Fechamento + CTA</div></div></div>`;
-      STEPS.forEach((s, i) => {
+      let html = `<div class="time-header"><div class="time-icon">${isAnuncio ? "📣" : "⏱"}</div><div><div style="font-size:13px;font-weight:600;color:#ccc">${isAnuncio ? "Estrutura do Criativo para Anúncio" : "Estrutura de tempo do Reel"}</div><div style="font-size:11px;color:#444">${isAnuncio ? "Dor → Diferencial → CTA Justificado" : "Gancho → Desenvolvimento → Clímax → Fechamento + CTA"}</div></div></div>`;
+      steps.forEach((s, i) => {
         const cor = s.special ? "#c8860a" : CORES[i % CORES.length];
         html += `<div class="step-card${s.special?' special':''}" style="border-left:3px solid ${cor}">
           <div class="step-head">
@@ -659,8 +662,10 @@
 
     function copiarRoteiro() {
       if (!window._roteiro) return;
-      const labels = { ideia:"IDEIA", gancho:"GANCHO", tipo_gancho:"TIPO DE GANCHO", desenvolvimento:"DESENVOLVIMENTO", climax:"CLÍMAX", fechamento:"FECHAMENTO + CTA" };
-      const txt = STEPS.map(s => `${labels[s.key]}\n${window._roteiro[s.key]}`).join("\n\n");
+      const isAnuncio = document.getElementById("nicho").value === "anuncio";
+      const steps = isAnuncio ? STEPS_ANUNCIO : STEPS_VIRAL;
+      const labels = { ideia:"IDEIA/TEMA", gancho:"ABERTURA/GANCHO", tipo_gancho:"TIPO DE GANCHO", desenvolvimento:"DESENVOLVIMENTO", climax:isAnuncio?"DIFERENCIAL":"CLÍMAX", fechamento:isAnuncio?"CTA JUSTIFICADO":"FECHAMENTO + CTA" };
+      const txt = steps.map(s => `${labels[s.key]}\n${window._roteiro[s.key]}`).join("\n\n");
       navigator.clipboard.writeText(txt).then(() => {
         const btns = document.querySelectorAll("#resultCreative .copy-btn");
         btns[0].textContent = "✓ Copiado!"; btns[0].style.color="#ff6b00";
