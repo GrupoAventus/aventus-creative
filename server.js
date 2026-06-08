@@ -7,8 +7,8 @@ app.use(cors());
 app.use(express.json());
 app.use(express.static("public"));
 
-const SONNET = "claude-sonnet-4-6";   // qualidade alta — Creative e Proposal
-const HAIKU  = "claude-haiku-4-5-20251001"; // rápido e barato — Trend e Follow
+const SONNET = "claude-haiku-4-5-20251001";   // tudo no Haiku para economizar
+const HAIKU  = "claude-haiku-4-5-20251001";
 
 const USUARIOS = {
   "squad01":"aventus","squad02":"aventus","brunoguedes":"aventus",
@@ -67,30 +67,32 @@ JSON puro apenas:
   }
 });
 
-// TREND — Sonnet com prompt otimizado
+// TREND — duas buscas separadas e curtas
 app.post("/buscar-trends", async (req, res) => {
   const { nicho } = req.body;
   if (!nicho) return res.status(400).json({ error: "Nicho obrigatório" });
 
   const hoje = new Date().toLocaleDateString('pt-BR');
-  const prompt = `Hoje: ${hoje}. Nicho: "${nicho}".
-Busque na web AGORA: trends viralizando + polêmicas/escândalos/brigas dos ÚLTIMOS 5 DIAS de influenciadores e empresários desse nicho. Seja direto, não suavize polêmicas.
-JSON puro, max 40 palavras/campo:
-{"trends":[{"titulo":"...","score":80,"plataformas":["Reels"],"tags":["t1"],"descricao":"...","como_usar":"...","fonte":"url ou null"}],"casos":[{"nome":"...","tipo":"polêmica","tempo":"há X dias","descricao":"...","oportunidade":"...","fonte":"url ou null"}]}
-Retorne 3 trends + 4 casos (mín. 2 polêmicas reais dos últimos 5 dias).`;
 
   try {
-    const text = await api(prompt, SONNET, true, 1500);
+    // Busca 1: trends (sem web search, modelo mais barato)
+    const promptTrends = `Nicho: "${nicho}". Liste 3 trends viralizando agora no Instagram/TikTok. JSON puro:
+{"trends":[{"titulo":"...","score":80,"plataformas":["Reels","TikTok"],"tags":["tag1","tag2"],"descricao":"por que viraliza em 30 palavras","como_usar":"como usar em 20 palavras","fonte":null}]}`;
+
+    // Busca 2: polêmicas (com web search focado)
+    const promptCasos = `Hoje é ${hoje}. Busque na internet: polêmicas, escândalos, brigas, cancelamentos dos ÚLTIMOS 5 DIAS no nicho de "${nicho}" no Brasil. Inclua influenciadores, empresários, marcas. Seja direto. Se não houver polêmica, busque novidades e conquistas recentes. JSON puro:
+{"casos":[{"nome":"nome real","tipo":"polêmica","tempo":"há X dias","descricao":"o que aconteceu em 30 palavras","oportunidade":"como criar conteúdo em 20 palavras","fonte":"url real ou null"}]}
+4 casos reais e recentes.`;
+
+    const [textTrends, textCasos] = await Promise.all([
+      api(promptTrends, HAIKU, false, 800),
+      api(promptCasos, SONNET, true, 1000),
+    ]);
+
     let trends = [], casos = [];
-    try {
-      const p = parseJSON(text);
-      trends = p.trends || []; casos = p.casos || [];
-    } catch {
-      const tm = text.match(/"trends"\s*:\s*(\[[\s\S]*?\])\s*,\s*"casos"/);
-      const cm = text.match(/"casos"\s*:\s*(\[[\s\S]*?\])\s*\}/);
-      if (tm) try { trends = JSON.parse(tm[1]); } catch {}
-      if (cm) try { casos = JSON.parse(cm[1]); } catch {}
-    }
+    try { trends = parseJSON(textTrends).trends || []; } catch(e) { console.error("Parse trends:", e.message); }
+    try { casos = parseJSON(textCasos).casos || []; } catch(e) { console.error("Parse casos:", e.message); }
+
     if (!trends.length && !casos.length) return res.status(500).json({ error: "Sem resultados" });
     res.json({ trends, casos });
   } catch(e) {
