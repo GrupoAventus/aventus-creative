@@ -102,7 +102,7 @@ Responda APENAS JSON puro, campos CURTOS (max 80 palavras cada):
 }
 
 Tipos: "polêmica" (brigas, escândalos, cancelamentos, processos, acusações), "conquista" (recordes, lançamentos, marcos), "novidade" (tendências, mudanças de mercado).
-Retorne pelo menos 3 trends e 5 casos — MÍNIMO 2 polêmicas reais.`;
+Retorne 3 trends e 4 casos (mínimo 2 polêmicas). Cada campo máximo 50 palavras.`;
 
   try {
     const response = await fetch("https://api.anthropic.com/v1/messages", {
@@ -113,10 +113,34 @@ Retorne pelo menos 3 trends e 5 casos — MÍNIMO 2 polêmicas reais.`;
     const data = await response.json();
     if (data.error) return res.status(500).json({ error: data.error.message });
     const text = (data.content || []).filter(i => i.type === "text").map(i => i.text).join("");
-    const s = text.indexOf("{"), e = text.lastIndexOf("}");
-    if (s === -1 || e === -1) return res.status(500).json({ error: "Formato inválido" });
-    let jsonStr = text.slice(s, e + 1).replace(/[\u0000-\u001F\u007F-\u009F]/g, " ");
-    res.json(JSON.parse(jsonStr));
+
+    // Extrai trends e casos separadamente para evitar JSON cortado
+    let trends = [], casos = [];
+    try {
+      const s = text.indexOf("{"), e = text.lastIndexOf("}");
+      if (s !== -1 && e !== -1) {
+        let jsonStr = text.slice(s, e + 1).replace(/[\u0000-\u001F\u007F-\u009F]/g, " ");
+        const parsed = JSON.parse(jsonStr);
+        trends = parsed.trends || [];
+        casos = parsed.casos || [];
+      }
+    } catch(parseErr) {
+      // Tenta extrair só trends se o JSON completo falhar
+      try {
+        const trendsMatch = text.match(/"trends"\s*:\s*(\[[\s\S]*?\])\s*,\s*"casos"/);
+        if (trendsMatch) trends = JSON.parse(trendsMatch[1]);
+        const casosMatch = text.match(/"casos"\s*:\s*(\[[\s\S]*?\])\s*\}/);
+        if (casosMatch) casos = JSON.parse(casosMatch[1]);
+      } catch(e2) {
+        console.error("Falha no parse parcial:", e2.message);
+      }
+    }
+
+    if (trends.length === 0 && casos.length === 0) {
+      return res.status(500).json({ error: "Não foi possível processar a resposta" });
+    }
+
+    res.json({ trends, casos });
   } catch(e) {
     console.error("Erro trends:", e);
     res.status(500).json({ error: "Erro ao buscar trends" });
