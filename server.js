@@ -186,30 +186,35 @@ Retorne APENAS JSON puro, sem markdown. Seja CONCISO, máximo 80 palavras por ca
 });
 
 app.post("/gerar-followup", async (req, res) => {
-  const { nicho } = req.body;
+  const { nicho, publico } = req.body;
   if (!nicho) return res.status(400).json({ error: "Nicho obrigatório" });
+  const contexto = publico ? `Produto/serviço: "${nicho}". Público-alvo: "${publico}"` : `Nicho: "${nicho}"`;
 
   const prompt = `Você é um especialista em vendas e follow-up baseado no Padrão Aventus.
 
-Gere uma sequência completa de follow-up para o nicho: "${nicho}"
+Contexto do vendedor:
+${contexto}
+
+Gere uma sequência completa de follow-up onde O VENDEDOR está abordando leads interessados no seu produto/serviço.
+As mensagens são enviadas PELO VENDEDOR para os LEADS/CLIENTES potenciais.
 
 A sequência DEVE seguir exatamente essa estrutura:
-1. Imediato: mensagem de boas-vindas + dica de enviar vídeo de apresentação
+1. Imediato: mensagem de boas-vindas do vendedor para o lead + dica de enviar vídeo de apresentação
 2. Em até 20min: ligar para o lead
 3. Se não ligou em 20min: mensagem avisando que vai ligar em breve
-4. Se não atendeu a ligação: mensagem se apresentando + diferencial do nicho
+4. Se não atendeu a ligação: mensagem se apresentando + diferencial do serviço/produto
 5. +24h: mensagem perguntando disponibilidade para ligar
 6. +7h: nova tentativa de ligação → se não atender: manda "oi"
 7. +24h: nova tentativa de ligação → se não atender:
 8. +7h: mensagem "vou apagar seu contato — é falta de interesse ou correria?"
 9. +24h sem resposta: AUTOMAÇÃO DE PERDIDOS começa
 10. Automação imediata: mensagem convidando para seguir o perfil no Instagram
-11. +2 dias: mensagem criativa mostrando que a empresa é insistente (adapte ao nicho)
+11. +2 dias: mensagem criativa mostrando que a empresa é insistente (adapte ao produto/serviço)
 12. +2 dias: mensagem com outro conteúdo/post do Instagram
 13. +2 dias: mais um conteúdo/post
 14. +2 dias: convite para reunião/conversa
 
-Personalize TODAS as mensagens para o nicho "${nicho}". Use "fulano" como placeholder do nome.
+Personalize TODAS as mensagens para o contexto acima. Use "fulano" como placeholder do nome do lead.
 
 Responda APENAS JSON puro, sem markdown:
 
@@ -221,13 +226,6 @@ Responda APENAS JSON puro, sem markdown:
       "acao": "Mensagem de boas-vindas",
       "mensagem": "texto da mensagem aqui",
       "dica": "dica opcional para quem está enviando"
-    },
-    {
-      "tempo": "Em até 20 minutos",
-      "tipo": "ligacao",
-      "acao": "Ligar para o lead",
-      "mensagem": null,
-      "dica": "dica sobre a ligação"
     }
   ]
 }`;
