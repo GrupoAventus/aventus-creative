@@ -204,13 +204,13 @@
 
   <!-- TREND -->
   <div class="page" id="page-trend">
-    <div class="badge"><div class="dot"></div> Trends em tempo real</div>
+    <div class="badge"><div class="dot"></div> Trends + Casos em tempo real</div>
     <h1>Aventus <span class="accent">Trend_</span></h1>
-    <p class="sub">Digite seu nicho e a IA vasculha a internet para encontrar as trends com maior potencial de viralização agora.</p>
+    <p class="sub">Digite seu nicho e a IA vasculha a internet — trends virais + o que está acontecendo com os maiores nomes do seu mercado agora.</p>
     <div class="card">
       <label>Seu nicho</label>
-      <input type="text" id="nichoTrend" placeholder="Ex: emagrecimento, marketing digital, skincare..." onkeydown="if(event.key==='Enter')buscarTrends()" />
-      <button class="btn btn-full" id="btnTrend" onclick="buscarTrends()">🔥 Buscar trends agora</button>
+      <input type="text" id="nichoTrend" placeholder="Ex: marketing digital, emagrecimento, skincare..." onkeydown="if(event.key==='Enter')buscarTrends()" />
+      <button class="btn btn-full" id="btnTrend" onclick="buscarTrends()">🔥 Buscar trends + casos agora</button>
       <p class="error" id="errorTrend" style="display:none"></p>
       <div id="loadingTrend" style="display:none">
         <p class="load-msg" id="loadmsgTrend">Vasculhando a internet...</p>
@@ -399,7 +399,7 @@
         });
         const data = await res.json();
         if (data.error) throw new Error(data.error);
-        renderTrends(data.trends);
+        renderTrends(data);
       } catch(e) {
         err.textContent = "Erro ao buscar trends. Tente novamente.";
         err.style.display = "block";
@@ -520,8 +520,11 @@
       window._roteiro = data;
     }
 
-    function renderTrends(trends) {
+    function renderTrends(data) {
       const result = document.getElementById("resultTrend");
+      const trends = data.trends || [];
+      const casos = data.casos || [];
+
       let html = `<div style="font-size:12px;color:#444;margin-bottom:14px;text-transform:uppercase;letter-spacing:1px;">🔥 Top 3 trends com maior potencial agora</div>`;
       trends.forEach((t, i) => {
         const score = t.score || 0;
@@ -540,6 +543,26 @@
           <div class="score-bar"><div class="score-bar-fill" style="width:${score}%;background:linear-gradient(90deg,${cor},#ffaa00)"></div></div>
         </div>`;
       });
+
+      if (casos.length > 0) {
+        html += `<div style="font-size:12px;color:#444;margin:24px 0 14px;text-transform:uppercase;letter-spacing:1px;">⚡ O que está acontecendo no seu nicho agora</div>`;
+        casos.forEach((c, i) => {
+          const tipoCor = c.tipo === "polêmica" ? "#ff4444" : c.tipo === "conquista" ? "#4ade80" : "#ff6b00";
+          const tipoIcon = c.tipo === "polêmica" ? "🔴" : c.tipo === "conquista" ? "🟢" : "⚡";
+          html += `<div class="trend-card" style="border-left-color:${tipoCor}">
+            <div class="trend-top">
+              <div>
+                <div class="trend-num" style="color:${tipoCor}">${tipoIcon} ${c.tipo?.toUpperCase() || "CASO"}</div>
+                <div class="trend-title">${c.nome}</div>
+                <div style="font-size:12px;color:#555;margin-top:2px">${c.tempo || ""}</div>
+              </div>
+            </div>
+            <div class="trend-info">${c.descricao}</div>
+            <div class="trend-dica"><strong>💡 Oportunidade de conteúdo:</strong> ${c.oportunidade}</div>
+          </div>`;
+        });
+      }
+
       result.innerHTML = html; result.style.display = "block";
     }
 
