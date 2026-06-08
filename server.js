@@ -67,21 +67,20 @@ JSON puro apenas:
   }
 });
 
-// TREND — Haiku (busca web barata)
+// TREND — Sonnet com prompt otimizado
 app.post("/buscar-trends", async (req, res) => {
   const { nicho } = req.body;
   if (!nicho) return res.status(400).json({ error: "Nicho obrigatório" });
 
   const hoje = new Date().toLocaleDateString('pt-BR');
-  const prompt = `Data: ${hoje}. Nicho: "${nicho}".
-Pesquise na web: 1) trends viralizando agora 2) polêmicas/casos dos ÚLTIMOS 5 DIAS de influenciadores/empresários desse nicho.
-APENAS casos dos últimos 5 dias. Mínimo 2 polêmicas reais.
-JSON puro, max 40 palavras por campo:
+  const prompt = `Hoje: ${hoje}. Nicho: "${nicho}".
+Busque na web AGORA: trends viralizando + polêmicas/escândalos/brigas dos ÚLTIMOS 5 DIAS de influenciadores e empresários desse nicho. Seja direto, não suavize polêmicas.
+JSON puro, max 40 palavras/campo:
 {"trends":[{"titulo":"...","score":80,"plataformas":["Reels"],"tags":["t1"],"descricao":"...","como_usar":"...","fonte":"url ou null"}],"casos":[{"nome":"...","tipo":"polêmica","tempo":"há X dias","descricao":"...","oportunidade":"...","fonte":"url ou null"}]}
-3 trends, 4 casos.`;
+Retorne 3 trends + 4 casos (mín. 2 polêmicas reais dos últimos 5 dias).`;
 
   try {
-    const text = await api(prompt, HAIKU, true, 1500);
+    const text = await api(prompt, SONNET, true, 1500);
     let trends = [], casos = [];
     try {
       const p = parseJSON(text);
