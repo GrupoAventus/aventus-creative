@@ -7,7 +7,6 @@ app.use(cors());
 app.use(express.json());
 app.use(express.static("public"));
 
-// ======= USUÁRIOS E SENHAS =======
 const USUARIOS = {
   "squad01": "aventus",
   "squad02": "aventus",
@@ -20,7 +19,6 @@ const USUARIOS = {
   "joel": "aventus",
   "construart": "aventus",
 };
-// =================================
 
 app.post("/login", (req, res) => {
   const { usuario, senha } = req.body;
@@ -28,7 +26,7 @@ app.post("/login", (req, res) => {
   if (USUARIOS[u] && USUARIOS[u] === senha) {
     res.json({ ok: true });
   } else {
-    res.status(401).json({ ok: false, error: "Usuário ou senha incorretos." });
+    res.status(401).json({ ok: false });
   }
 });
 
@@ -36,61 +34,28 @@ app.post("/gerar-roteiro", async (req, res) => {
   const { ideia, tom, duracao, nicho } = req.body;
   if (!ideia) return res.status(400).json({ error: "Ideia obrigatória" });
   const nichoSelecionado = nicho || "Negócios & Empreendedorismo";
-
   const GANCHO_TIPOS = ["Negativo","Contraintuitivo","Curiosidade","Polêmica","Pergunta: Você sabia que...","Autoridade","Storytelling","Identificação","Frases de Impacto","Urgência","Visual"];
 
   const prompt = `Você é um especialista em roteiros virais para Instagram Reels no nicho de ${nichoSelecionado}.
-
-O usuário quer criar um Reel com a seguinte ideia/tema: "${ideia}"
-Tom desejado: ${tom}
-Duração alvo: ${duracao}
-Nicho: ${nichoSelecionado}
-
-Use web search para pesquisar dados reais e atuais sobre esse tema antes de criar o roteiro.
-
+Ideia/tema: "${ideia}", Tom: ${tom}, Duração: ${duracao}, Nicho: ${nichoSelecionado}
+Use web search para pesquisar dados reais sobre esse tema.
 Os 11 tipos de gancho: ${GANCHO_TIPOS.map((g,i) => `${i+1}. ${g}`).join(", ")}
-
-Responda APENAS em JSON puro, sem markdown, sem texto fora do JSON:
-
-{
-  "ideia": "Mensagem central em 1-2 frases com dados reais do tema.",
-  "gancho": "Frase exata de abertura (0-3s) que para o scroll. Deve ser falada na câmera, impactante.",
-  "tipo_gancho": "Nome do tipo de gancho escolhido + explicação em 2-3 frases de POR QUE esse gancho foi escolhido e como retém atenção nos primeiros 3 segundos.",
-  "desenvolvimento": "Corpo do vídeo (4-30s): entrega o presságio rapidamente, sem enrolação.",
-  "climax": "O ponto alto (30s-1min): o insight, a virada, a lição mais importante.",
-  "fechamento": "Conclusão + CTA (1min-1:30min): entrega a promessa e termina com chamada clara.",
-  "legenda": "Legenda completa para o post no Instagram. Tom humano, envolvente, que complementa o vídeo sem repetir tudo. Máximo 150 palavras. OBRIGATÓRIO terminar com uma pergunta instigante para gerar comentários.",
-  "hashtags": "#hashtag1 #hashtag2 #hashtag3 #hashtag4 #hashtag5 #hashtag6 #hashtag7 #hashtag8 #hashtag9 #hashtag10 (10 hashtags relevantes misturando grandes, médias e de nicho)"
-}`;
+Responda APENAS JSON puro:
+{"ideia":"...","gancho":"...","tipo_gancho":"...","desenvolvimento":"...","climax":"...","fechamento":"...","legenda":"Legenda humana max 150 palavras terminando com pergunta para gerar comentários","hashtags":"#tag1 #tag2 ... (10 hashtags)"}`;
 
   try {
     const response = await fetch("https://api.anthropic.com/v1/messages", {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "x-api-key": process.env.ANTHROPIC_API_KEY,
-        "anthropic-version": "2023-06-01",
-        "anthropic-beta": "web-search-2025-03-05",
-      },
-      body: JSON.stringify({
-        model: "claude-sonnet-4-5",
-        max_tokens: 1500,
-        tools: [{ type: "web_search_20250305", name: "web_search" }],
-        messages: [{ role: "user", content: prompt }],
-      }),
+      headers: { "Content-Type": "application/json", "x-api-key": process.env.ANTHROPIC_API_KEY, "anthropic-version": "2023-06-01", "anthropic-beta": "web-search-2025-03-05" },
+      body: JSON.stringify({ model: "claude-sonnet-4-5", max_tokens: 1500, tools: [{ type: "web_search_20250305", name: "web_search" }], messages: [{ role: "user", content: prompt }] }),
     });
-
     const data = await response.json();
-    console.log("Roteiro API:", JSON.stringify(data).slice(0, 300));
-
     if (data.error) return res.status(500).json({ error: data.error.message });
-
-    const content = data.content || [];
-    const text = content.filter(i => i.type === "text").map(i => i.text).join("");
-    const jsonMatch = text.match(/\{[\s\S]*\}/);
-    if (!jsonMatch) return res.status(500).json({ error: "Formato inválido" });
-    res.json(JSON.parse(jsonMatch[0]));
-  } catch (e) {
+    const text = (data.content || []).filter(i => i.type === "text").map(i => i.text).join("");
+    const s = text.indexOf("{"), e = text.lastIndexOf("}");
+    if (s === -1 || e === -1) return res.status(500).json({ error: "Formato inválido" });
+    res.json(JSON.parse(text.slice(s, e + 1)));
+  } catch(e) {
     console.error("Erro roteiro:", e);
     res.status(500).json({ error: "Erro ao gerar roteiro" });
   }
@@ -100,86 +65,24 @@ app.post("/buscar-trends", async (req, res) => {
   const { nicho } = req.body;
   if (!nicho) return res.status(400).json({ error: "Nicho obrigatório" });
 
-  const prompt = `Você é um especialista em tendências de conteúdo viral para redes sociais.
-
-Use a busca na web para pesquisar as trends mais quentes para o nicho: "${nicho}"
-
-Retorne APENAS JSON puro, sem markdown. Seja CONCISO, máximo 80 palavras por campo de texto:
-
-{
-  "trends": [
-    {
-      "titulo": "Título curto da trend (max 10 palavras)",
-      "score": 85,
-      "plataformas": ["Reels", "TikTok"],
-      "tags": ["tag1", "tag2", "tag3"],
-      "descricao": "Por que está viralizando agora. Máximo 60 palavras.",
-      "como_usar": "Como aplicar no nicho. Máximo 60 palavras."
-    },
-    {
-      "titulo": "...",
-      "score": 0,
-      "plataformas": [],
-      "tags": [],
-      "descricao": "...",
-      "como_usar": "..."
-    },
-    {
-      "titulo": "...",
-      "score": 0,
-      "plataformas": [],
-      "tags": [],
-      "descricao": "...",
-      "como_usar": "..."
-    }
-  ]
-}`;
+  const prompt = `Especialista em trends virais. Pesquise as 3 trends mais quentes para o nicho: "${nicho}".
+Responda APENAS JSON puro, campos CURTOS (max 60 palavras cada):
+{"trends":[{"titulo":"título curto","score":85,"plataformas":["Reels","TikTok"],"tags":["tag1","tag2"],"descricao":"por que está viralizando","como_usar":"como aplicar no nicho"}]}`;
 
   try {
     const response = await fetch("https://api.anthropic.com/v1/messages", {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "x-api-key": process.env.ANTHROPIC_API_KEY,
-        "anthropic-version": "2023-06-01",
-        "anthropic-beta": "web-search-2025-03-05",
-      },
-      body: JSON.stringify({
-        model: "claude-sonnet-4-5",
-        max_tokens: 2000,
-        tools: [{ type: "web_search_20250305", name: "web_search" }],
-        messages: [{ role: "user", content: prompt }],
-      }),
+      headers: { "Content-Type": "application/json", "x-api-key": process.env.ANTHROPIC_API_KEY, "anthropic-version": "2023-06-01", "anthropic-beta": "web-search-2025-03-05" },
+      body: JSON.stringify({ model: "claude-sonnet-4-5", max_tokens: 2000, tools: [{ type: "web_search_20250305", name: "web_search" }], messages: [{ role: "user", content: prompt }] }),
     });
-
     const data = await response.json();
-    console.log("Trends API:", JSON.stringify(data).slice(0, 300));
-
     if (data.error) return res.status(500).json({ error: data.error.message });
-
-    const content = data.content || [];
-    const text = content.filter(i => i.type === "text").map(i => i.text).join("");
-    console.log("TRENDS TEXT COMPLETO:", text);
-
-    // Tenta extrair JSON de forma robusta
-    const start = text.indexOf("{");
-    const end = text.lastIndexOf("}");
-    if (start === -1 || end === -1) return res.status(500).json({ error: "Formato inválido" });
-    
-    let jsonStr = text.slice(start, end + 1);
-    // Remove caracteres problemáticos
-    jsonStr = jsonStr.replace(/[\u0000-\u001F\u007F-\u009F]/g, " ");
-    
-    let parsed;
-    try {
-      parsed = JSON.parse(jsonStr);
-    } catch(parseErr) {
-      console.error("Parse error:", parseErr.message);
-      console.error("JSON problemático:", jsonStr.slice(0, 500));
-      return res.status(500).json({ error: "Erro ao processar resposta" });
-    }
-    res.json(parsed);
-  } catch (e) {
+    const text = (data.content || []).filter(i => i.type === "text").map(i => i.text).join("");
+    const s = text.indexOf("{"), e = text.lastIndexOf("}");
+    if (s === -1 || e === -1) return res.status(500).json({ error: "Formato inválido" });
+    let jsonStr = text.slice(s, e + 1).replace(/[\u0000-\u001F\u007F-\u009F]/g, " ");
+    res.json(JSON.parse(jsonStr));
+  } catch(e) {
     console.error("Erro trends:", e);
     res.status(500).json({ error: "Erro ao buscar trends" });
   }
@@ -190,74 +93,99 @@ app.post("/gerar-followup", async (req, res) => {
   if (!nicho) return res.status(400).json({ error: "Nicho obrigatório" });
   const contexto = publico ? `Produto/serviço: "${nicho}". Público-alvo: "${publico}"` : `Nicho: "${nicho}"`;
 
-  const prompt = `Você é um especialista em vendas e follow-up baseado no Padrão Aventus.
-
-Contexto do vendedor:
+  const prompt = `Especialista em vendas. Gere sequência de follow-up Padrão Aventus para:
 ${contexto}
+As mensagens são enviadas PELO VENDEDOR para os LEADS. Use "fulano" como placeholder.
 
-Gere uma sequência completa de follow-up onde O VENDEDOR está abordando leads interessados no seu produto/serviço.
-As mensagens são enviadas PELO VENDEDOR para os LEADS/CLIENTES potenciais.
+Estrutura OBRIGATÓRIA:
+1. Imediato: boas-vindas + dica vídeo apresentação
+2. Até 20min: ligar
+3. Se não ligou em 20min: avisar que vai ligar
+4. Se não atendeu: apresentação + diferencial
+5. +24h: perguntar disponibilidade
+6. +7h: ligar → se não atender: manda "oi"
+7. +24h: ligar → se não atender:
+8. +7h: "vou apagar seu contato — falta de interesse ou correria?"
+9. +24h: AUTOMAÇÃO PERDIDOS — post Instagram
+10. +2 dias: mensagem criativa sobre insistência
+11. +2 dias: outro conteúdo Instagram
+12. +2 dias: outro conteúdo
+13. +2 dias: convite reunião
 
-A sequência DEVE seguir exatamente essa estrutura:
-1. Imediato: mensagem de boas-vindas do vendedor para o lead + dica de enviar vídeo de apresentação
-2. Em até 20min: ligar para o lead
-3. Se não ligou em 20min: mensagem avisando que vai ligar em breve
-4. Se não atendeu a ligação: mensagem se apresentando + diferencial do serviço/produto
-5. +24h: mensagem perguntando disponibilidade para ligar
-6. +7h: nova tentativa de ligação → se não atender: manda "oi"
-7. +24h: nova tentativa de ligação → se não atender:
-8. +7h: mensagem "vou apagar seu contato — é falta de interesse ou correria?"
-9. +24h sem resposta: AUTOMAÇÃO DE PERDIDOS começa
-10. Automação imediata: mensagem convidando para seguir o perfil no Instagram
-11. +2 dias: mensagem criativa mostrando que a empresa é insistente (adapte ao produto/serviço)
-12. +2 dias: mensagem com outro conteúdo/post do Instagram
-13. +2 dias: mais um conteúdo/post
-14. +2 dias: convite para reunião/conversa
-
-Personalize TODAS as mensagens para o contexto acima. Use "fulano" como placeholder do nome do lead.
-
-Responda APENAS JSON puro, sem markdown:
-
-{
-  "followup": [
-    {
-      "tempo": "Imediato",
-      "tipo": "mensagem",
-      "acao": "Mensagem de boas-vindas",
-      "mensagem": "texto da mensagem aqui",
-      "dica": "dica opcional para quem está enviando"
-    }
-  ]
-}`;
+Responda APENAS JSON puro:
+{"followup":[{"tempo":"Imediato","tipo":"mensagem","acao":"Mensagem de boas-vindas","mensagem":"texto","dica":"dica"}]}`;
 
   try {
     const response = await fetch("https://api.anthropic.com/v1/messages", {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "x-api-key": process.env.ANTHROPIC_API_KEY,
-        "anthropic-version": "2023-06-01",
-      },
-      body: JSON.stringify({
-        model: "claude-sonnet-4-5",
-        max_tokens: 3000,
-        messages: [{ role: "user", content: prompt }],
-      }),
+      headers: { "Content-Type": "application/json", "x-api-key": process.env.ANTHROPIC_API_KEY, "anthropic-version": "2023-06-01" },
+      body: JSON.stringify({ model: "claude-sonnet-4-5", max_tokens: 3000, messages: [{ role: "user", content: prompt }] }),
     });
-
     const data = await response.json();
     if (data.error) return res.status(500).json({ error: data.error.message });
-
-    const content = data.content || [];
-    const text = content.filter(i => i.type === "text").map(i => i.text).join("");
-    const start = text.indexOf("{");
-    const end = text.lastIndexOf("}");
-    if (start === -1 || end === -1) return res.status(500).json({ error: "Formato inválido" });
-    const parsed = JSON.parse(text.slice(start, end + 1));
-    res.json(parsed);
-  } catch (e) {
+    const text = (data.content || []).filter(i => i.type === "text").map(i => i.text).join("");
+    const s = text.indexOf("{"), e = text.lastIndexOf("}");
+    if (s === -1 || e === -1) return res.status(500).json({ error: "Formato inválido" });
+    res.json(JSON.parse(text.slice(s, e + 1)));
+  } catch(e) {
     console.error("Erro followup:", e);
     res.status(500).json({ error: "Erro ao gerar follow-up" });
+  }
+});
+
+app.post("/gerar-proposta", async (req, res) => {
+  const { diferencial, problema, ciclo, solucao, credenciais, endereco, indicadores, metodo, icp, preco_caro, preco_final } = req.body;
+
+  const prompt = `Você é um especialista em propostas comerciais. Monte uma proposta no Método Aventus Digital.
+
+Dados do cliente:
+- Diferencial: ${diferencial}
+- Problema do mercado: ${problema}
+- Ciclo vicioso: ${ciclo}
+- Solução: ${solucao}
+- Credenciais: ${credenciais}
+- Endereço/onde encontrar: ${endereco}
+- Indicadores: ${indicadores}
+- Método e entregáveis: ${metodo}
+- Cliente ideal (ICP): ${icp}
+- Preço cheio: ${preco_caro}
+- Preço final: ${preco_final}
+
+Gere EXATAMENTE esses slides em ordem:
+1. DIFERENCIAL — o que diferencia essa empresa no mercado
+2. PROBLEMA DO MERCADO — dor que o cliente enfrenta
+3. CICLO VICIOSO — por que o cliente não consegue resolver sozinho
+4. COMO TRATAMOS — como essa empresa resolve de forma diferente
+5. CREDENCIAIS — formação, experiência, autoridade
+6. ONDE NOS ENCONTRAR — endereço e presença digital
+7. NOSSOS NÚMEROS — indicadores e resultados
+8. NOSSO MÉTODO — entregáveis e como funciona
+9. SÓ INFORMAÇÃO NÃO BASTA — adapte uma metáfora criativa ao nicho mostrando que sem execução/acompanhamento não funciona
+10. O QUE VOCÊ VAI CONTINUAR SENTINDO — dores se não contratar, finalizando com "uma decisão pode mudar tudo isso"
+11. O QUE TE TROUXE AQUI HOJE — pergunta: "O que fez você agendar essa conversa hoje e não daqui 3 meses?"
+12. SUA MOTIVAÇÃO — com base no ICP, descubra a motivação profunda perguntando "por quê?" 3 vezes. Mostre onde o cliente quer chegar
+13. DEPOIMENTOS — slide indicando que aqui vai um vídeo de feedback de cliente
+14. INVESTIMENTO COMPLETO — liste TODAS as entregas com o preço cheio
+15. SEU INVESTIMENTO — apenas o preço final protagonista
+
+Responda APENAS JSON puro:
+{"slides":[{"titulo":"DIFERENCIAL","subtitulo":"Por que somos diferentes","tipo":"normal","conteudo":"conteúdo do slide"}]}`;
+
+  try {
+    const response = await fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "x-api-key": process.env.ANTHROPIC_API_KEY, "anthropic-version": "2023-06-01" },
+      body: JSON.stringify({ model: "claude-sonnet-4-5", max_tokens: 4000, messages: [{ role: "user", content: prompt }] }),
+    });
+    const data = await response.json();
+    if (data.error) return res.status(500).json({ error: data.error.message });
+    const text = (data.content || []).filter(i => i.type === "text").map(i => i.text).join("");
+    const s = text.indexOf("{"), e = text.lastIndexOf("}");
+    if (s === -1 || e === -1) return res.status(500).json({ error: "Formato inválido" });
+    res.json(JSON.parse(text.slice(s, e + 1)));
+  } catch(e) {
+    console.error("Erro proposta:", e);
+    res.status(500).json({ error: "Erro ao gerar proposta" });
   }
 });
 
