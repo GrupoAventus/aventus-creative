@@ -36,9 +36,11 @@ async function api(prompt, modelo, webSearch = false, maxTokens = 1000) {
 }
 
 function parseJSON(text) {
-  const s = text.indexOf("{"), e = text.lastIndexOf("}");
+  // Remove tags de citação da busca web
+  const limpo = text.replace(/<cite[^>]*>/g, "").replace(/<\/cite>/g, "");
+  const s = limpo.indexOf("{"), e = limpo.lastIndexOf("}");
   if (s === -1 || e === -1) throw new Error("JSON não encontrado");
-  const clean = text.slice(s, e + 1)
+  const clean = limpo.slice(s, e + 1)
     .replace(/[\u0000-\u001F\u007F-\u009F]/g, " ")
     .replace(/\n/g, " ")
     .replace(/\r/g, " ")
