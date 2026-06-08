@@ -529,7 +529,6 @@
       trends.forEach((t, i) => {
         const score = t.score || 0;
         const cor = score >= 80 ? "#ff4500" : score >= 60 ? "#ff6b00" : "#ff8c00";
-        const ideia = encodeURIComponent(`${t.titulo} — ${t.descricao}`);
         html += `<div class="trend-card" style="border-left-color:${cor}">
           <div class="trend-top">
             <div><div class="trend-num">Trend #${i+1}</div><div class="trend-title">${t.titulo}</div></div>
@@ -543,22 +542,21 @@
           <div class="trend-dica"><strong>💡 Como usar:</strong> ${t.como_usar}</div>
           <div class="score-bar"><div class="score-bar-fill" style="width:${score}%;background:linear-gradient(90deg,${cor},#ffaa00)"></div></div>
           <div style="display:flex;gap:8px;margin-top:12px">
-            <button onclick="usarNoCreative('${ideia}')" style="flex:1;padding:9px;font-size:13px;font-weight:600;cursor:pointer;border:1px solid #ff6b0044;border-radius:8px;background:#ff6b0015;color:#ff6b00;" onmouseover="this.style.background='#ff6b0030'" onmouseout="this.style.background='#ff6b0015'">🎬 Gravar roteiro</button>
-            ${t.fonte ? `<a href="${t.fonte}" target="_blank" style="flex:1;padding:9px;font-size:13px;font-weight:600;cursor:pointer;border:1px solid #2a2a2a;border-radius:8px;background:transparent;color:#555;text-decoration:none;text-align:center;display:flex;align-items:center;justify-content:center;gap:4px" onmouseover="this.style.borderColor='#555';this.style.color='#aaa'" onmouseout="this.style.borderColor='#2a2a2a';this.style.color='#555'">🔗 Ver fonte</a>` : ""}
+            <button class="btn-usar-creative" data-ideia="${(t.titulo + ' — ' + t.descricao).replace(/"/g,'&quot;')}" style="flex:1;padding:9px;font-size:13px;font-weight:600;cursor:pointer;border:1px solid #ff6b0044;border-radius:8px;background:#ff6b0015;color:#ff6b00;">🎬 Gravar roteiro</button>
+            ${t.fonte ? `<a href="${t.fonte}" target="_blank" style="flex:1;padding:9px;font-size:13px;font-weight:600;border:1px solid #2a2a2a;border-radius:8px;background:transparent;color:#555;text-decoration:none;text-align:center;display:flex;align-items:center;justify-content:center;">🔗 Ver fonte</a>` : ""}
           </div>
         </div>`;
       });
 
       if (casos.length > 0) {
         html += `<div style="font-size:12px;color:#444;margin:24px 0 14px;text-transform:uppercase;letter-spacing:1px;">⚡ O que está acontecendo no seu nicho agora</div>`;
-        casos.forEach((c, i) => {
+        casos.forEach((c) => {
           const tipoCor = c.tipo === "polêmica" ? "#ff4444" : c.tipo === "conquista" ? "#4ade80" : "#ff6b00";
           const tipoIcon = c.tipo === "polêmica" ? "🔴" : c.tipo === "conquista" ? "🟢" : "⚡";
-          const ideia = encodeURIComponent(`${c.nome} — ${c.descricao}`);
           html += `<div class="trend-card" style="border-left-color:${tipoCor}">
             <div class="trend-top">
               <div>
-                <div class="trend-num" style="color:${tipoCor}">${tipoIcon} ${c.tipo?.toUpperCase() || "CASO"}</div>
+                <div class="trend-num" style="color:${tipoCor}">${tipoIcon} ${(c.tipo||"caso").toUpperCase()}</div>
                 <div class="trend-title">${c.nome}</div>
                 <div style="font-size:12px;color:#555;margin-top:2px">${c.tempo || ""}</div>
               </div>
@@ -566,23 +564,28 @@
             <div class="trend-info">${c.descricao}</div>
             <div class="trend-dica"><strong>💡 Oportunidade de conteúdo:</strong> ${c.oportunidade}</div>
             <div style="display:flex;gap:8px;margin-top:12px">
-              <button onclick="usarNoCreative('${ideia}')" style="flex:1;padding:9px;font-size:13px;font-weight:600;cursor:pointer;border:1px solid #ff6b0044;border-radius:8px;background:#ff6b0015;color:#ff6b00;" onmouseover="this.style.background='#ff6b0030'" onmouseout="this.style.background='#ff6b0015'">🎬 Gravar roteiro</button>
-              ${c.fonte ? `<a href="${c.fonte}" target="_blank" style="flex:1;padding:9px;font-size:13px;font-weight:600;cursor:pointer;border:1px solid #2a2a2a;border-radius:8px;background:transparent;color:#555;text-decoration:none;text-align:center;display:flex;align-items:center;justify-content:center;gap:4px" onmouseover="this.style.borderColor='#555';this.style.color='#aaa'" onmouseout="this.style.borderColor='#2a2a2a';this.style.color='#555'">🔗 Ver fonte</a>` : ""}
+              <button class="btn-usar-creative" data-ideia="${(c.nome + ' — ' + c.descricao).replace(/"/g,'&quot;')}" style="flex:1;padding:9px;font-size:13px;font-weight:600;cursor:pointer;border:1px solid #ff6b0044;border-radius:8px;background:#ff6b0015;color:#ff6b00;">🎬 Gravar roteiro</button>
+              ${c.fonte ? `<a href="${c.fonte}" target="_blank" style="flex:1;padding:9px;font-size:13px;font-weight:600;border:1px solid #2a2a2a;border-radius:8px;background:transparent;color:#555;text-decoration:none;text-align:center;display:flex;align-items:center;justify-content:center;">🔗 Ver fonte</a>` : ""}
             </div>
           </div>`;
         });
       }
 
-      result.innerHTML = html; result.style.display = "block";
+      result.innerHTML = html;
+      result.style.display = "block";
+
+      // Eventos delegados — sem aspas no onclick
+      result.querySelectorAll(".btn-usar-creative").forEach(btn => {
+        btn.addEventListener("click", () => usarNoCreative(btn.dataset.ideia));
+      });
     }
 
-    function usarNoCreative(ideiaEncoded) {
-      const ideia = decodeURIComponent(ideiaEncoded);
+    function usarNoCreative(ideia) {
       document.getElementById("ideia").value = ideia;
       trocarPagina("creative");
-      document.querySelector(".hub-card#nav-creative").classList.add("active");
-      document.getElementById("ideia").focus();
-      document.getElementById("ideia").scrollIntoView({ behavior: "smooth", block: "center" });
+      setTimeout(() => {
+        document.getElementById("ideia").scrollIntoView({ behavior: "smooth", block: "center" });
+      }, 100);
     }
 
     function renderFollowup(followup) {
