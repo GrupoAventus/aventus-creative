@@ -36,15 +36,16 @@ async function api(prompt, modelo, webSearch = false, maxTokens = 1000) {
 }
 
 function parseJSON(text) {
-  // Remove tags de citação da busca web
-  const limpo = text.replace(/<cite[^>]*>/g, "").replace(/<\/cite>/g, "");
+  const limpo = text
+    .replace(/<cite[^>]*>/g, "").replace(/<\/cite>/g, "")
+    .replace(/<strong[^>]*>/g, "").replace(/<\/strong>/g, "")
+    .replace(/<em[^>]*>/g, "").replace(/<\/em>/g, "")
+    .replace(/<[^>]+>/g, ""); // remove qualquer outra tag HTML
   const s = limpo.indexOf("{"), e = limpo.lastIndexOf("}");
   if (s === -1 || e === -1) throw new Error("JSON não encontrado");
   const clean = limpo.slice(s, e + 1)
     .replace(/[\u0000-\u001F\u007F-\u009F]/g, " ")
-    .replace(/\n/g, " ")
-    .replace(/\r/g, " ")
-    .replace(/\t/g, " ");
+    .replace(/\n/g, " ").replace(/\r/g, " ").replace(/\t/g, " ");
   return JSON.parse(clean);
 }
 
