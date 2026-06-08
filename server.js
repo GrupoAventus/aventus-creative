@@ -37,10 +37,11 @@ async function api(prompt, modelo, webSearch = false, maxTokens = 1000) {
 
 function parseJSON(text) {
   const limpo = text
+    .replace(/<a[^>]*>/g, "").replace(/<\/a>/g, "")
     .replace(/<cite[^>]*>/g, "").replace(/<\/cite>/g, "")
     .replace(/<strong[^>]*>/g, "").replace(/<\/strong>/g, "")
     .replace(/<em[^>]*>/g, "").replace(/<\/em>/g, "")
-    .replace(/<[^>]+>/g, ""); // remove qualquer outra tag HTML
+    .replace(/<[^>]+>/g, "");
   const s = limpo.indexOf("{"), e = limpo.lastIndexOf("}");
   if (s === -1 || e === -1) throw new Error("JSON não encontrado");
   const clean = limpo.slice(s, e + 1)
@@ -61,32 +62,19 @@ app.post("/gerar-roteiro", async (req, res) => {
   if (!ideia) return res.status(400).json({ error: "Ideia obrigatória" });
 
   const isAnuncio = nicho === "anuncio";
-
-  const duracaoInstrucao = duracao === "30 segundos" 
-    ? "Roteiro MUITO CURTO: máximo 3-4 frases por seção. Total deve caber em 30 segundos falados."
-    : duracao === "60 segundos"
-    ? "Roteiro MÉDIO: 4-6 frases por seção. Total deve caber em 60 segundos falados."
-    : "Roteiro LONGO: 6-8 frases por seção. Total deve caber em 90 segundos falados.";
+  const durSeg = duracao === "30 segundos" ? "30s" : duracao === "60 segundos" ? "60s" : "90s";
 
   const prompt = isAnuncio
-    ? `Crie um roteiro de CRIATIVO PARA ANÚNCIO (${duracao}) sobre: "${ideia}". Tom: ${tom}.
-${duracaoInstrucao}
-Estrutura obrigatória:
-1. DOR/INIMIGO COMUM: começar atacando uma dor real do público OU criticar algo do mercado/concorrente que frustra o cliente
-2. DIFERENCIAL: explicar por que você é diferente e o que faz de único
-3. CTA JUSTIFICADO: chamada para ação com justificativa clara (ex: "clica em saiba mais porque...")
-Pesquise dados reais sobre o tema.
-JSON puro:
-{"ideia":"tema central do anúncio","gancho":"frase de abertura impactante que ataca a dor 0-3s","tipo_gancho":"tipo do gancho + por que foi escolhido em 2 frases","desenvolvimento":"desenvolvimento da dor/crítica ao mercado","climax":"apresentação do diferencial — por que você é diferente","fechamento":"CTA justificado — diga exatamente o que clicar e POR QUE","legenda":"legenda para o post max 80 palavras terminando com pergunta","hashtags":"8 hashtags relevantes"}`
-    : `Crie um roteiro de VÍDEO VIRAL (${duracao}) sobre: "${ideia}". Tom: ${tom}.
-${duracaoInstrucao}
-Pesquise dados reais sobre o tema.
-Ganchos: Negativo, Contraintuitivo, Curiosidade, Polêmica, Você sabia que, Autoridade, Storytelling, Identificação, Frases de Impacto, Urgência, Visual.
-JSON puro:
-{"ideia":"mensagem central com dado real","gancho":"frase exata abertura 0-3s","tipo_gancho":"nome + por que foi escolhido em 2 frases","desenvolvimento":"corpo sem enrolação respeitando duração ${duracao}","climax":"insight principal","fechamento":"conclusão+CTA","legenda":"legenda humana max 80 palavras terminando com pergunta","hashtags":"8 hashtags"}`;
+    ? `Pesquise UM dado real sobre: "${ideia}". Use esse dado para criar roteiro de anúncio ${durSeg}. Tom: ${tom}.
+JSON puro, CADA CAMPO MÁXIMO 20 PALAVRAS:
+{"ideia":"tema","gancho":"abertura atacando dor","tipo_gancho":"tipo + motivo","desenvolvimento":"dor ou crítica","climax":"diferencial","fechamento":"CTA justificado","legenda":"max 50 palavras com pergunta final","hashtags":"#t1 #t2 #t3 #t4 #t5 #t6 #t7 #t8"}`
+    : `Pesquise UM dado real sobre: "${ideia}". Use esse dado para criar roteiro viral ${durSeg}. Tom: ${tom}.
+Ganchos: Negativo,Contraintuitivo,Curiosidade,Polêmica,Você sabia que,Autoridade,Storytelling,Identificação,Frases de Impacto,Urgência,Visual.
+JSON puro, CADA CAMPO MÁXIMO 20 PALAVRAS:
+{"ideia":"tema com dado real","gancho":"frase exata 0-3s","tipo_gancho":"tipo + motivo","desenvolvimento":"corpo do vídeo","climax":"insight principal","fechamento":"conclusão+CTA","legenda":"max 50 palavras com pergunta final","hashtags":"#t1 #t2 #t3 #t4 #t5 #t6 #t7 #t8"}`;
 
   try {
-    res.json(parseJSON(await api(prompt, HAIKU, true, 1200)));
+    res.json(parseJSON(await api(prompt, HAIKU, true, 2000)));
   } catch(e) {
     console.error("Roteiro:", e.message);
     res.status(500).json({ error: e.message });
