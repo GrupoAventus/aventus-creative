@@ -38,7 +38,12 @@ async function api(prompt, modelo, webSearch = false, maxTokens = 1000) {
 function parseJSON(text) {
   const s = text.indexOf("{"), e = text.lastIndexOf("}");
   if (s === -1 || e === -1) throw new Error("JSON não encontrado");
-  return JSON.parse(text.slice(s, e + 1));
+  const clean = text.slice(s, e + 1)
+    .replace(/[\u0000-\u001F\u007F-\u009F]/g, " ")
+    .replace(/\n/g, " ")
+    .replace(/\r/g, " ")
+    .replace(/\t/g, " ");
+  return JSON.parse(clean);
 }
 
 app.post("/login", (req, res) => {
