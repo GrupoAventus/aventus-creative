@@ -87,14 +87,18 @@ app.post("/gerar-roteiro", async (req, res) => {
     : "Vídeo de 90s: cada campo máximo 5-6 frases.";
 
   const prompt = isAnuncio
-    ? `Pesquise dados reais sobre: "${ideia}". Crie roteiro de ANÚNCIO. Tom: ${tom}. ${duracaoGuia}
-Estrutura: 1)Dor/inimigo comum 2)Diferencial 3)CTA justificado.
+    ? `O usuário quer um roteiro de ANÚNCIO sobre EXATAMENTE este tema/ideia: "${ideia}"
+Tom: ${tom}. ${duracaoGuia}
+IMPORTANTE: Mantenha-se fiel ao tema exato fornecido. Não generalize nem mude o assunto. Pesquise dados reais relacionados especificamente a esse tema.
+Estrutura: 1)Dor/inimigo comum relacionado ao tema 2)Diferencial do tema apresentado 3)CTA justificado.
 JSON puro sem texto extra:
-{"ideia":"tema central","gancho":"frase 0-3s atacando dor diretamente","tipo_gancho":"nome do tipo + por que funciona","desenvolvimento":"aprofunda a dor ou critica o mercado","climax":"seu diferencial único","fechamento":"CTA com justificativa clara","legenda":"legenda humana max 70 palavras terminando com pergunta","hashtags":"#tag1 #tag2 #tag3 #tag4 #tag5 #tag6 #tag7 #tag8"}`
-    : `Pesquise dados reais sobre: "${ideia}". Crie roteiro VIRAL. Tom: ${tom}. ${duracaoGuia}
+{"ideia":"o tema exato fornecido pelo usuário","gancho":"frase 0-3s atacando dor relacionada ao tema","tipo_gancho":"nome do tipo + por que funciona","desenvolvimento":"aprofunda a dor/contexto do tema específico","climax":"o diferencial mencionado pelo usuário","fechamento":"CTA com justificativa clara","legenda":"legenda humana max 70 palavras terminando com pergunta","hashtags":"#tag1 #tag2 #tag3 #tag4 #tag5 #tag6 #tag7 #tag8"}`
+    : `O usuário quer um roteiro VIRAL sobre EXATAMENTE este tema/ideia: "${ideia}"
+Tom: ${tom}. ${duracaoGuia}
+IMPORTANTE: Mantenha-se fiel ao tema exato fornecido. Não generalize nem mude o assunto para outro tópico do nicho. Pesquise dados reais relacionados especificamente a esse tema.
 Ganchos: Negativo,Contraintuitivo,Curiosidade,Polêmica,Você sabia que,Autoridade,Storytelling,Identificação,Frases de Impacto,Urgência,Visual.
 JSON puro sem texto extra:
-{"ideia":"mensagem central com dado real pesquisado","gancho":"frase exata de abertura 0-3s impactante","tipo_gancho":"nome do gancho + por que foi escolhido","desenvolvimento":"corpo do vídeo direto ao ponto","climax":"insight ou virada principal","fechamento":"conclusão forte + CTA","legenda":"legenda humana max 70 palavras terminando com pergunta","hashtags":"#tag1 #tag2 #tag3 #tag4 #tag5 #tag6 #tag7 #tag8"}`;
+{"ideia":"o tema exato fornecido pelo usuário, possivelmente com um dado real","gancho":"frase exata de abertura 0-3s sobre o tema específico","tipo_gancho":"nome do gancho + por que foi escolhido","desenvolvimento":"corpo do vídeo sobre o tema específico fornecido","climax":"insight ou virada relacionada ao tema específico","fechamento":"conclusão forte + CTA sobre o tema","legenda":"legenda humana max 70 palavras terminando com pergunta","hashtags":"#tag1 #tag2 #tag3 #tag4 #tag5 #tag6 #tag7 #tag8"}`;
 
   try {
     res.json(parseJSON(await api(prompt, true, 2000)));
